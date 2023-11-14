@@ -1,3 +1,4 @@
+The nodemodules are not here in the project so they should be installed manually for now like react router dom etc...
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
