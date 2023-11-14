@@ -1,29 +1,28 @@
-// Login.js
+// Registration.js
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./Login.css";
+import "./Registration.css"; 
 
-const Login = () => {
+const Registration = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    // Implement login logic here, e.g., sending a request to the backend for authentication.
-    // Can use state or context to manage the user's authentication status.
+  const handleRegistration = () => {
+    // Implement registration logic here, e.g., sending a request to the backend to create a new user.
 
-    // If authentication is successful, redirect to the home page.
+    // After successful registration, you can redirect to the login page or home page.
     navigate("/home");
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
+    <div className="registration-container">
+      <h2>Register</h2>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleLogin();
+          handleRegistration();
         }}
       >
         <div className="form-group">
@@ -42,14 +41,14 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
 
       <p>
-        Don't have an account? <Link to="/register">Register here</Link>.
+        Already have an account? <Link to="/login">Login here</Link>.
       </p>
     </div>
   );
 };
 
-export default Login;
+export default Registration;

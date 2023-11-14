@@ -11,17 +11,15 @@ const Home = () => {
       <div className="content">
         <h1>Welcome to Your Music Dashboard</h1>
         <div className="button-container">
-          <Link to="/login">
-            <button className="login-button">Login</button>
-          </Link>
+          
           <Link to="/dashboard">
             <button className="dashboard-button">Dashboard</button>
           </Link>
           <Link to="/add-song">
             <button className="add-song-button">Add Song</button>
           </Link>
-          <Link to="/settings">
-            <button className="settings-button">Settings</button>
+          <Link to="/dropsong">
+            <button className="settings-button">Drop Song</button>
           </Link>
         </div>
       </div>
