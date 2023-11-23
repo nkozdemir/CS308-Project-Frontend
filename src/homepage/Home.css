@@ -1,0 +1,60 @@
+/* Home.css */
+
+/* Styles for the entire home container */
+.home-container {
+    background-color: #1f1f1f; /* Background color for the entire page */
+    color: white;
+    height: 100vh; /* 100% viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  /* Background image styles */
+  .background-image {
+    background-image: url('https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Ffree-vector%2Fmusical-colorful-notes-dark-background_1017-32302.jpg&tbnid=ErfoWOLm1v7P9M&vet=12ahUKEwjP-s-7jLSCAxW8iP0HHQvRD_sQMygAegQIARBT..i&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Ffree-photos-vectors%2Fmusic-background&docid=mljKnIsgSLOSVM&w=626&h=357&q=background%20picture%20for%20music%20web%20app&ved=2ahUKEwjP-s-7jLSCAxW8iP0HHQvRD_sQMygAegQIARBT'); /* Set your background image here */
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7); /* Adjust the brightness for a subtle effect */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place the image behind the content */
+  }
+  
+  /* Title styles */
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Button styles */
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+    margin-bottom: 10px; /* Add space between buttons */
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Individual button styles */
+  .login-button {
+    background-color: #61dafb; /* Different color for the "Login" button */
+  }
+  
+  /* Additional button styles can be added for "Dashboard," "Add Song," and "Settings" buttons */
+  
+  /* Responsiveness */
+  @media (max-width: 768px) {
+    /* Adjust styles for smaller screens if needed */
+  }
+  
