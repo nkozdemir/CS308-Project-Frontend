@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Login from './Login'; // Import the Login component
-import Home from './Home'; // Import the Home component
-import AddSong from './Addsong'; // Import the AddSong component
-import Registration from './Registration';
+import Login from './login/Login'; // Import the Login component
+import Home from './homepage/Home'; // Import the Home component
+import AddSong from './addsong/Addsong'; // Import the AddSong component
+import Registration from './register/Registration';
 
 const App = () => {
   return (
