@@ -37,30 +37,34 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <div className="background-image">
-        {/*  background image goes here */}
-      </div>
-      <div className="content">
-        <h1>Welcome to Your Music Dashboard</h1>
-        <div className="button-container">
-          <Link to="/dashboard">
-            <button className="dashboard-button">Dashboard</button>
-          </Link>
-          <Link to="/add-song">
-            <button className="add-song-button">Add Song</button>
-          </Link>
-          <Link to="/dropsong">
-            <button className="settings-button">Drop Song</button>
-          </Link>
-          {/* Logout Button */}
-          <button onClick={handleLogout} className="logout-button">
-            Logout
-          </button>
-          {logoutSuccess && <p>Logout successful!</p>}
-        </div>
+    <div className="background-image">
+      {/*  background image goes here */}
+    </div>
+    <div className="content">
+      <h1>Welcome to Your Music Dashboard</h1>
+      <div className="button-container">
+        <Link to="/dashboard">
+          <button className="dashboard-button">Dashboard</button>
+        </Link>
+        <Link to="/add-song">
+          <button className="add-song-button">Add Song</button>
+        </Link>
+        <Link to="/dropsong">
+          <button className="settings-button">Drop Song</button>
+        </Link>
+        {/* Logout Button */}
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+        {logoutSuccess && <p>Logout successful!</p>}
+
+        {/* User Songs Button */}
+        <Link to="/user-songs">
+          <button className="user-songs-button">Your Songs</button>
+        </Link>
       </div>
     </div>
-  );
+  </div>
+);
 };
-
 export default Home;

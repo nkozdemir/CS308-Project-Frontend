@@ -5,6 +5,7 @@ import Login from './login/Login'; // Import the Login component
 import Home from './homepage/Home'; // Import the Home component
 import AddSong from './addsong/Addsong'; // Import the AddSong component
 import Registration from './register/Registration';
+import Seeaddedsongs from './SeeAddedSongs/UserSongs.js'
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/add-song" element={<AddSong />} /> {/* Route for AddSong */}
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/user-songs" element={<Seeaddedsongs />} />
       </Routes>
     </Router>
   );
