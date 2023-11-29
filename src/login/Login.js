@@ -3,11 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
 
-
 const baseURL = "http://localhost:3000/auth"; 
-
-
-
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,6 +27,11 @@ const Login = () => {
       })
       .then((response) => {
         if (response.status === 200) {
+          // Extract the access token from the response
+          const accessToken = response.data.accessToken;
+
+          // Save the access token to local storage
+          localStorage.setItem("accessToken", accessToken);
           // Login successful, redirect to the home page
           navigate("/home");
         } else {
