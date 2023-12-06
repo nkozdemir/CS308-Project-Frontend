@@ -2,59 +2,72 @@
 
 /* Styles for the entire home container */
 .home-container {
-    background-color: #1f1f1f; /* Background color for the entire page */
-    color: white;
-    height: 100vh; /* 100% viewport height */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-  }
-  
-  /* Background image styles */
-  .background-image {
-    background-image: url('https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Ffree-vector%2Fmusical-colorful-notes-dark-background_1017-32302.jpg&tbnid=ErfoWOLm1v7P9M&vet=12ahUKEwjP-s-7jLSCAxW8iP0HHQvRD_sQMygAegQIARBT..i&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Ffree-photos-vectors%2Fmusic-background&docid=mljKnIsgSLOSVM&w=626&h=357&q=background%20picture%20for%20music%20web%20app&ved=2ahUKEwjP-s-7jLSCAxW8iP0HHQvRD_sQMygAegQIARBT'); /* Set your background image here */
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.7); /* Adjust the brightness for a subtle effect */
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Place the image behind the content */
-  }
-  
-  /* Title styles */
+  background-color: #161616; /* Spotify green */
+  color: white;
+  height: 100vh; /* 100% viewport height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  position: relative; /* Set the position to relative to allow z-index */
+}
+
+/* Background image styles */
+.background-image {
+  background-image: url('data:image/jpeg;base64,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'); /* Set your background image URL here */
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Place the image behind the content */
+}
+
+/* Content styles */
+.content {
+  z-index: 1; /* Ensure content appears above the background image */
+}
+
+/* Title styles */
+h1 {
+  font-size: 3rem; /* Larger font size for the title */
+  margin-bottom: 20px;
+}
+
+/* Button styles */
+.button-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line on smaller screens */
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  background-color: #1db954; /* Spotify green */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  border-radius: 30px; /* Rounded corners */
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #25d366; /* Darker green on hover */
+}
+
+/* Logout button styles */
+.logout-button {
+  background-color: #dc3545; /* Red color for the logout button */
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  /* Adjust styles for smaller screens if needed */
   h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    font-size: 2rem; /* Decrease font size for smaller screens */
   }
-  
-  /* Button styles */
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-    margin-bottom: 10px; /* Add space between buttons */
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Individual button styles */
-  .login-button {
-    background-color: #61dafb; /* Different color for the "Login" button */
-  }
-  
-  /* Additional button styles can be added for "Dashboard," "Add Song," and "Settings" buttons */
-  
-  /* Responsiveness */
-  @media (max-width: 768px) {
-    /* Adjust styles for smaller screens if needed */
-  }
-  
+}

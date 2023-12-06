@@ -6,6 +6,10 @@ import Home from './homepage/Home'; // Import the Home component
 import AddSong from './addsong/Addsong'; // Import the AddSong component
 import Registration from './register/Registration';
 import Seeaddedsongs from './SeeAddedSongs/UserSongs.js'
+import Dashboard from './Dashboard/Dashboard.js';
+import SearchSong from './SearchSong/SearchSong.js';
+import Csvadd from './csvadd/csvadd'
+
 
 const App = () => {
   return (
@@ -17,6 +21,9 @@ const App = () => {
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
         <Route path="/user-songs" element={<Seeaddedsongs />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/SearchSong" element={<SearchSong />} />
+        <Route path="/csvadd" element={<Csvadd/>} />
       </Routes>
     </Router>
   );

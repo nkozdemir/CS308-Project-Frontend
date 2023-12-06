@@ -62,6 +62,12 @@ const Home = () => {
         <Link to="/user-songs">
           <button className="user-songs-button">Your Songs</button>
         </Link>
+        <Link to="/SearchSong">
+          <button className="SearchSong">Search Among Your Songs</button>
+        </Link>
+        <Link to="/csvadd">
+          <button className="csvadd">Add csv file </button>
+        </Link>
       </div>
     </div>
   </div>
