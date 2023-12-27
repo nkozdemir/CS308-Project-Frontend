@@ -1,8 +1,46 @@
-# React + Vite
+# HarmoniFuse - CS308 Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application which provides music recommendation and analysis based on the songs that users add to the system.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+
+**Client:** React, TailwindCSS, DaisyUI
+
+**Server:** Node, Express
+
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/nkozdemir/CS308-Project-Frontend.git
+```
+
+Go to the project directory
+
+```bash
+  cd CS308-Project-Frontend
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
+```
+
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+```
+VITE_API_BASE_URL = "http://localhost:3000"
+```
