@@ -9,6 +9,9 @@ const SongRatings = () => {
   const navigate = useNavigate();
   
   const [ratingData, setRatingData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredRatingData, setFilteredRatingData] = useState([]);
+
   const [loading, setLoading] = useState(false); 
   const [deleting, setDeleting] = useState(false); 
   const [noResults, setNoResults] = useState(false);
@@ -23,7 +26,9 @@ const SongRatings = () => {
         if (response.data.data.length === 0) {
           setNoResults(true);
         } else {
+          console.log("Song ratings:", response.data.data);
           setRatingData(response.data.data);
+          setFilteredRatingData(response.data.data);
         }
       }
     } catch (error) {
@@ -45,10 +50,6 @@ const SongRatings = () => {
     }
   };
 
-  useEffect(() => {
-    fetchRatingData();
-  }, []);
-  
   const removeRating = async (songRatingId) => {
     try {
       setDeleting(true); 
@@ -75,12 +76,42 @@ const SongRatings = () => {
       setDeleting(false); 
       fetchRatingData();
     }
-  }
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+
+    // Update userSongs based on the search query
+    const filteredSongs = event.target.value
+      ? ratingData.filter(song =>
+          song.SongInfo.Title.toLowerCase().includes(event.target.value.toLowerCase()) ||
+          //song.SongInfo.Performers.some(performer => performer.Name.toLowerCase().includes(event.target.value.toLowerCase())) ||
+          song.SongInfo.Album.toLowerCase().includes(event.target.value.toLowerCase())
+        )
+      : ratingData;
+
+    setFilteredRatingData(filteredSongs);
+    setNoResults(filteredSongs.length === 0);
+  };
+
+  useEffect(() => {
+    fetchRatingData();
+  }, []);
 
   return (
     <div>
       <div className="my-20 p-4">
         <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Song Ratings</h1>
+        <div className="join flex items-center justify-center mb-16">
+          <div>
+            <input 
+              className="input input-bordered input-primary join-item" 
+              placeholder="Search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
         {loading ? (
           <div className="flex items-center justify-center">
             <span className="loading loading-bars loading-lg"></span>
@@ -89,7 +120,7 @@ const SongRatings = () => {
           <p>No results found. You can rate your songs from <Link to="/song/user">here</Link>.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {ratingData.map((rating) => (
+            {filteredRatingData.map((rating) => (
               <div key={rating.SongRatingID} className="card w-96 bg-base-100 shadow-xl">
                 <figure>
                   {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (

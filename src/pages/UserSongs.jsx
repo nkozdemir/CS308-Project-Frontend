@@ -10,12 +10,13 @@ const UserSongs = () => {
   const navigate = useNavigate();
 
   const [userSongs, setUserSongs] = useState([]);
-  const [noResults, setNoResults] = useState(false);
+  const [songRatings, setSongRatings] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredSongs, setFilteredSongs] = useState([]);
 
+  const [noResults, setNoResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const [operating, setOperating] = useState(false);
-
-  const [songRatings, setSongRatings] = useState([]);
 
   const fetchUserSongs = async () => {
     try {
@@ -26,7 +27,9 @@ const UserSongs = () => {
         if (response.data.data.length === 0) {
           setNoResults(true);
         } else {
+          //console.log('User Songs:', response.data.data);
           setUserSongs(response.data.data);
+          setFilteredSongs(response.data.data);
           fetchSongRatings();
         }
       }
@@ -106,10 +109,6 @@ const UserSongs = () => {
     }
   }
 
-  useEffect(() => {
-    fetchUserSongs();
-  }, []);
-
   const removeSong = async (songId) => {
     try {
       setOperating(true);
@@ -138,10 +137,40 @@ const UserSongs = () => {
     }
   }
   
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+
+    // Update userSongs based on the search query
+    const filteredSongs = event.target.value
+      ? userSongs.filter(song =>
+          song.Title.toLowerCase().includes(event.target.value.toLowerCase()) ||
+          song.Performers.some(performer => performer.Name.toLowerCase().includes(event.target.value.toLowerCase())) ||
+          song.Album.toLowerCase().includes(event.target.value.toLowerCase())
+        )
+      : userSongs;
+
+    setFilteredSongs(filteredSongs);
+    setNoResults(filteredSongs.length === 0);
+  };
+
+  useEffect(() => {
+    fetchUserSongs();
+  }, []);
+
   return (
     <div>
       <div className="my-20 p-4">
         <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Songs</h1>
+        <div className="join flex items-center justify-center mb-16">
+          <div>
+            <input 
+              className="input input-bordered input-primary join-item" 
+              placeholder="Search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
         {loading ? (
           <div className="flex items-center justify-center">
             <span className="loading loading-bars loading-lg"></span>
@@ -150,7 +179,7 @@ const UserSongs = () => {
           <p>No results found. You can add songs from <Link to="/song/search">here</Link>.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {userSongs.map((song) => (
+            {filteredSongs.map((song) => (
               <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
                 <figure>
                   {song.Image && JSON.parse(song.Image)?.[1] && (

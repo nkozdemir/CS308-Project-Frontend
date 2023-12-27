@@ -9,9 +9,10 @@ const PerformerRatings = () => {
     
     const [ratingData, setRatingData] = useState([]);
     const [performerData, setPerformerData] = useState([]);
-
     const [selectedPerformer, setSelectedPerformer] = useState(1);
     const [rating, setRating] = useState(1);
+    const [filteredRatingData, setFilteredRatingData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [operating, setOperating] = useState(false); 
@@ -28,7 +29,9 @@ const PerformerRatings = () => {
                 if (response.data.data.length === 0) {
                     setNoResults(true);
                 } else {
+                    console.log("Performer ratings:", response.data.data);
                     setRatingData(response.data.data);
+                    setFilteredRatingData(response.data.data);
                 }
             }
         } catch (error) {
@@ -75,11 +78,6 @@ const PerformerRatings = () => {
         }
     };
 
-    useEffect(() => {
-        fetchPerformers();
-        fetchRatingData();
-    }, []);
-  
     const removeRating = async (performerRatingId) => {
         try {
             setOperating(true); // Set deleting to true before making the API request
@@ -108,7 +106,7 @@ const PerformerRatings = () => {
             setOperating(false); 
             fetchRatingData();
         }
-    }
+    };
 
     const addRating = async () => {
         if (rating < 1 || rating > 5) {
@@ -147,20 +145,47 @@ const PerformerRatings = () => {
             setOperating(false); 
             fetchRatingData();
         }
-    }
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    
+        // Update userSongs based on the search query
+        const filteredSongs = event.target.value
+          ? ratingData.filter(song =>
+              song.PerformerInfo.Name.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+          : ratingData;
+    
+        setFilteredRatingData(filteredSongs);
+        setNoResults(filteredSongs.length === 0);
+    };
+
+    useEffect(() => {
+        fetchPerformers();
+        fetchRatingData();
+    }, []);
 
     return (
         <div>
             <div className="my-20 p-4">
                 <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Performer Ratings</h1>
-                <div className="join flex items-center justify-center mb-8">
-                    <div className="join-item">
+                <div className="flex items-center justify-center">
+                    <input 
+                        className="input input-bordered input-primary" 
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+                <div className="join flex items-center justify-center my-8">
+                    <div className="join-item ml-8">
                         <label className="form-control w-full max-w-xs">
                             <div className="label">
                                 <span className="label-text">Choose Performer</span>
                             </div>
                             <select 
-                                className="select select-bordered"
+                                className="select select-bordered select-primary"
                                 id="performer"
                                 value={selectedPerformer}
                                 onChange={(e) => setSelectedPerformer(e.target.value)}
@@ -180,7 +205,7 @@ const PerformerRatings = () => {
                                 <span className="label-text">Select Rating</span>
                             </div>
                             <select 
-                                className="select select-bordered"
+                                className="select select-bordered select-primary"
                                 id="rating"
                                 value={rating}
                                 onChange={(e) => setRating(e.target.value)}
@@ -208,7 +233,7 @@ const PerformerRatings = () => {
                     <div>No results found.</div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">
-                        {ratingData.map((rating) => (
+                        {filteredRatingData.map((rating) => (
                             <div key={rating.PerformerRatingID} className="card w-96 bg-base-100 shadow-xl">
                                 <figure>
                                     {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[1] && (
