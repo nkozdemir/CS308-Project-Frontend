@@ -29,7 +29,7 @@ const PerformerRatings = () => {
                 if (response.data.data.length === 0) {
                     setNoResults(true);
                 } else {
-                    console.log("Performer ratings:", response.data.data);
+                    //console.log("Performer ratings:", response.data.data);
                     setRatingData(response.data.data);
                     setFilteredRatingData(response.data.data);
                 }
