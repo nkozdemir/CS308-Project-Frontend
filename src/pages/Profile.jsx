@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../services/axiosConfig';
 import showToast from '../components/showToast';
-import Recommendations from '../components/Recommendations';
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -57,21 +56,13 @@ const Profile = () => {
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
                 ) : (
-                    <div>
-                        <div className='flex items-center justify-center'>
-                            <div className="avatar placeholder mr-4">
-                                <div className="bg-neutral text-neutral-content rounded-full w-20 h-20">
-                                    <span className="text-3xl">{userInfo.Name[0]}</span>
-                                </div>
-                            </div> 
-                            {userInfo.Name}
-                        </div>
-                        {userInfo.Name && userInfo.Email && (
-                            <div>
-                                <div className="divider my-16"></div> 
-                                <Recommendations />
+                    <div className='flex items-center justify-center'>
+                        <div className="avatar placeholder mr-4">
+                            <div className="bg-neutral text-neutral-content rounded-full w-20 h-20">
+                                <span className="text-3xl">{userInfo.Name[0]}</span>
                             </div>
-                        )}
+                        </div> 
+                        {userInfo.Name}
                     </div>
                 )}
             </div>

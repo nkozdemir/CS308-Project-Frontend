@@ -1,9 +1,9 @@
-import Profile from "./Profile";
+import RecommendationsPage from "./RecommendationsPage";
 
 const Home = () => {
     return (
         <div>
-            <Profile />
+            <RecommendationsPage />
         </div>
     );
 }
