@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabPanel } from "react-tabs";
-import { Link } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import "react-tabs/style/react-tabs.css";
 import axiosInstance from "../services/axiosConfig";
 import convertToMinutes from "../utils/convertToMinutes";
+import html2canvas from "html2canvas";
 
 const AnalysisPage = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -85,6 +85,60 @@ const AnalysisPage = () => {
       setLoading(false);
     }
   };
+
+  const handleShareList = () => {
+    try {
+      setLoading(true);
+  
+      let tweetText = "Check out my favourite songs ";
+  
+      // Add songs to the tweet text
+      let songsToInclude;
+      if (selectedTab === 0 && topRatedSongsByDecade.length > 0) {
+        tweetText += `from the ${selectedDecade}s!\n\n`;
+        songsToInclude = topRatedSongsByDecade.slice(0, 5);
+      } else if (selectedTab === 1 && topRatedSongsFromLastMonths.length > 0) {
+        tweetText += `from the last ${selectedMonth} month(s)!\n\n`;
+        songsToInclude = topRatedSongsFromLastMonths.slice(0, 5);
+      } else {
+        // Handle the case when there are no songs to display
+        tweetText += "No songs to display.";
+        songsToInclude = [];
+      }
+  
+      songsToInclude.forEach((song, index) => {
+        tweetText += `${index + 1}) ${song.Title} ~ ${song.Performers.map((genre) => genre.Name).join(", ")}\n`;
+      });
+  
+      // URL encode the tweet text
+      tweetText = encodeURIComponent(tweetText);
+  
+      // Create a tweet with the song list
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+  
+      // Open a new window to initiate the tweet
+      window.open(tweetUrl, "_blank");
+    } catch (error) {
+      console.error("Error creating song list tweet:", error);
+    } finally {
+      setLoading(false);
+    }
+  };  
+
+  // // Asynchronously load the Twitter for Websites JavaScript using our loading snippet
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   script.src = "https://platform.twitter.com/widgets.js";
+  //   script.charset = "utf-8";
+  //   script.async = true;
+
+  //   document.body.appendChild(script);
+
+  //   return () => {
+  //     // Cleanup if necessary
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (selectedTab === 0)
@@ -194,6 +248,16 @@ const AnalysisPage = () => {
                 </div>
               )}
             </ul>
+            {/* <a className="twitter-share-button" data-size="large">
+              Tweet
+            </a> */}
+            {/* Separate button for testing */}
+            <button
+              onClick={handleShareList}
+              style={{ backgroundColor: 'black', color: 'white', padding: '10px', borderRadius: '5px', marginTop: '20px' }}
+            >
+              Share on X (Twitter)
+            </button>
           </TabPanel>
           <TabPanel>
             {/* Content for Tab 2 */}
@@ -246,6 +310,12 @@ const AnalysisPage = () => {
                 </div>
               )}
             </ul>
+            <button
+              onClick={handleShareList}
+              style={{ backgroundColor: 'black', color: 'white', padding: '10px', borderRadius: '5px', marginTop: '20px' }}
+            >
+              Share on X (Twitter)
+            </button>
           </TabPanel>
           <TabPanel>
             <h3 className="font-bold text-3xl mt-8 mb-4">Daily Average Ratings</h3>
