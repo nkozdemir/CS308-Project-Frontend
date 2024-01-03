@@ -1,10 +1,11 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import showToast from '../showToast';
 import convertToMinutes from '../../utils/convertToMinutes';
 
-const SongRecommendationsPerf = () => {
+const SongRecommendationsFriendsLatest = () => {
   const navigate = useNavigate();
 
   const [songRecommendations, setSongRecommendations] = useState([]);
@@ -16,7 +17,7 @@ const SongRecommendationsPerf = () => {
     try {
       setLoadingSongRecommendations(true);
       setNoRecommendations(false);
-      const response = await axiosInstance.post('/recommendation/performer/rating');
+      const response = await axiosInstance.post('/recommendation/friend/latest');
 
       if (response.status === 200) {
         if (response.data.data.length === 0) {
@@ -74,7 +75,7 @@ const SongRecommendationsPerf = () => {
   return (
     <div>
       <div className='flex items-center justify-center mb-8'>
-        <h2 className='font-bold text-2xl'>Based On Your Performer Ratings</h2>
+        <h2 className='font-bold text-2xl'>Based On Your Friends' Latest Songs</h2>
         <button
           onClick={() => {
             setNoRecommendations(false);
@@ -93,7 +94,7 @@ const SongRecommendationsPerf = () => {
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noRecommendations ? (
-        <p className='flex items-center justify-center'>No recommendations found. You can rate performers from <Link to="/rating/performer" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+        <p className='flex items-center justify-center'>No recommendations found. You can add friends from <Link to="/friends" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : (
         <>
           <div className="overflow-x-auto shadow-lg">
@@ -154,4 +155,4 @@ const SongRecommendationsPerf = () => {
   );
 };
 
-export default SongRecommendationsPerf;
+export default SongRecommendationsFriendsLatest;

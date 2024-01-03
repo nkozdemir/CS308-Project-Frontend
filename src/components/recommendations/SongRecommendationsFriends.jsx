@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import showToast from '../showToast';
 import convertToMinutes from '../../utils/convertToMinutes';
@@ -11,7 +11,7 @@ const SongRecommendationsFriends = () => {
   const [songRecommendations, setSongRecommendations] = useState([]);
   const [loadingSongRecommendations, setLoadingSongRecommendations] = useState(false);
   const [addingSong, setAddingSong] = useState(false);
-  const [noRecommendations, setNoRecommendations] = useState(false);
+  const [noRecommendations, setNoRecommendations] = useState(true);
 
   const getSongRecommendations = async () => {
     try {
@@ -72,10 +72,6 @@ const SongRecommendationsFriends = () => {
     }
   };
 
-  useEffect(() => {
-    getSongRecommendations();
-  }, []);
-
   return (
     <div>
       <div className='flex items-center justify-center mb-8'>
@@ -98,10 +94,10 @@ const SongRecommendationsFriends = () => {
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noRecommendations ? (
-        <p className='flex items-center justify-center'>No recommendations found.</p>
+        <p className='flex items-center justify-center'>No recommendations found. You can add friends from <Link to="/friends" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto shadow-lg">
             <table className='table'>
               <thead>
                 <tr>

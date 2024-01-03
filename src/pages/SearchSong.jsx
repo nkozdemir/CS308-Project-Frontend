@@ -85,10 +85,10 @@ const SearchSong = () => {
   };
 
   return (
-    <div>
-      <div className="my-20 p-4">
+    <div className="my-20 p-4">
+      <div className="mb-16">
         <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Search Song</h1>
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center">
           <div className="flex space-x-4">
             <label className="form-control w-full max-w-xs">
               <div className="label">
@@ -149,12 +149,10 @@ const SearchSong = () => {
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noResults ? (
-        <div>
-          <p>No results found. You can add custom song from <Link to="/song/add">here</Link>.</p>
-        </div>
+        <p className='flex items-center justify-center'>No results found. You add songs from <Link to="/song/add" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : searchResults.length > 0 ? (
-        <div className="flex items-center justify-center shadow-lg">
-          <table className="table table-zebra">
+        <div className="overflow-x-auto shadow-lg">
+          <table className="table">
             <thead>
               <tr>
                 <th>Image</th>
@@ -163,14 +161,16 @@ const SearchSong = () => {
                 <th>Album</th>
                 <th>Release Date</th>
                 <th>Genres</th>
-                <th></th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {searchResults.map((song) => (
-                <tr key={song.SpotifyId}>
+                <tr key={song.SpotifyId} className="hover">
                   <th>
-                    <img src={song.Album.images[2].url} alt="song"/>
+                    <figure>
+                      <img src={song.Album.images[2].url} alt="song"/>
+                    </figure>
                   </th>
                   <th>
                     {song.Title}
@@ -188,7 +188,7 @@ const SearchSong = () => {
                     {song.Genres.join(", ")}
                   </th>
                   <th>
-                    <button className="btn btn-success btn-circle" onClick={() => handleAddToUser(song)} disabled={isAdding}>
+                    <button className="btn btn-success btn-circle btn-sm" onClick={() => handleAddToUser(song)} disabled={isAdding}>
                       <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
                         <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
                       </svg>

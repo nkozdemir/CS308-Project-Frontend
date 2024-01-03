@@ -176,7 +176,7 @@ const UserSongs = () => {
             <span className="loading loading-bars loading-lg"></span>
           </div>
         ) : noResults ? (
-          <p>No results found. You can add songs from <Link to="/song/search">here</Link>.</p>
+          <p className='flex items-center justify-center'>No songs found. You add songs from <Link to="/song/search" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredSongs.map((song) => (

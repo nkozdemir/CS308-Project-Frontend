@@ -185,8 +185,8 @@ const Friends = () => {
                 <p className='flex items-center justify-center'>No friends found.</p>
             ) : (
                 <>
-                    <p className='mb-4'>You have {friendsInformation.length} friends.</p>
-                    <div className="overflow-x-auto">
+                    <p className='flex items-center justify-center mb-4'>You have {friendsInformation.length} friends.</p>
+                    <div className="overflow-x-auto shadow-lg">
                         <table className='table'>
                             <thead>
                                 <th>Avatar</th>
@@ -208,7 +208,7 @@ const Friends = () => {
                                         <td>{result.FriendInfo.Name}</td>
                                         <td>
                                             <button 
-                                                className="btn btn-error btn-circle"
+                                                className="btn btn-error btn-circle btn-sm"
                                                 disabled={operating}
                                                 onClick={() => removeFriend(result.FriendInfo.UserID)} 
                                             >
@@ -244,7 +244,7 @@ const Friends = () => {
                 ) : noResults ? (
                     <p className='flex items-center justify-center'>No results found.</p>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto shadow-lg">
                         <table className='table'>
                             <thead>
                                 <th>Avatar</th>
@@ -266,7 +266,7 @@ const Friends = () => {
                                         <td>{result.Name}</td>
                                         <td>
                                             <button 
-                                                className="btn btn-success btn-circle" 
+                                                className="btn btn-success btn-circle btn-sm" 
                                                 disabled={operating}
                                                 onClick={() => addFriend(result.Email)}
                                             >

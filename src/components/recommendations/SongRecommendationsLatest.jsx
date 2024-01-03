@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import showToast from '../showToast';
 import convertToMinutes from '../../utils/convertToMinutes';
@@ -97,10 +97,10 @@ const SongRecommendationsLatest = () => {
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noRecommendations ? (
-        <p className='flex items-center justify-center'>No recommendations found.</p>
+        <p className='flex items-center justify-center'>No recommendations found. You add songs from <Link to="/song/search" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto shadow-lg">
             <table className='table'>
               <thead>
                 <tr>

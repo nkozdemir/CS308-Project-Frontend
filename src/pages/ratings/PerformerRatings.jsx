@@ -230,7 +230,7 @@ const PerformerRatings = () => {
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
                 ) : noResults ? (
-                    <div>No results found.</div>
+                    <p className='flex items-center justify-center'>No recommendations found. You can rate performers from above.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">
                         {filteredRatingData.map((rating) => (

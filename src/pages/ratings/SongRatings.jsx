@@ -117,7 +117,7 @@ const SongRatings = () => {
             <span className="loading loading-bars loading-lg"></span>
           </div>
         ) : noResults ? (
-          <p>No results found. You can rate your songs from <Link to="/song/user">here</Link>.</p>
+          <p className='flex items-center justify-center'>No rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredRatingData.map((rating) => (
