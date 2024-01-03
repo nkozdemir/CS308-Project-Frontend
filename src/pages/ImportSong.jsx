@@ -23,10 +23,14 @@ const ImportSong = () => {
         setImporting(true);
         showToast('info', 'Importing from CSV file...');
 
-        const response = await axiosInstance.post('/upload', formData);
+        const response = await axiosInstance.post('/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
         if (response.status === 200) {
-          showToast('success', 'Songs uploaded successfully');
+          showToast('ok', 'Songs uploaded successfully');
         } 
       } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
