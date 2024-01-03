@@ -4,13 +4,15 @@ import { Line } from 'react-chartjs-2';
 import "react-tabs/style/react-tabs.css";
 import axiosInstance from "../services/axiosConfig";
 import convertToMinutes from "../utils/convertToMinutes";
-import html2canvas from "html2canvas";
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 const AnalysisPage = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedDecade, setSelectedDecade] = useState(1980);
   const [topRatedSongsByDecade, setTopRatedSongsByDecade] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(1);
+  const [selectedMonth2, setSelectedMonth2] = useState(30);
   const [topRatedSongsFromLastMonths, setTopRatedSongsFromLastMonths] = useState([]);
   const [dailyAverageRatings, setDailyAverageRatings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -146,39 +148,23 @@ const AnalysisPage = () => {
     else if (selectedTab === 1)
       fetchTopRatedSongsFromLastMonths(selectedMonth);
     else if (selectedTab === 2)
-      fetchDailyAverageRatings(7);
-  }, [selectedTab, selectedDecade, selectedMonth]);
+      fetchDailyAverageRatings(selectedMonth2 * 30);
+  }, [selectedTab, selectedDecade, selectedMonth, selectedMonth2]);
 
   const handleTabChange = (index) => {
     setSelectedTab(index);
   };
 
-  const chartData = {
+  const dailyAverageRatingChartData = {
     labels: dailyAverageRatings.map((data) => data.date),
     datasets: [
       {
-        label: 'Daily Average Ratings',
+        label: "Daily Average Ratings",
         data: dailyAverageRatings.map((data) => data.averageRating),
         fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
+        borderColor: "rgba(75,192,192,1)",
       },
     ],
-  };
-
-  const chartOptions = {
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'day',
-        },
-      },
-      y: {
-        min: 0,
-        max: 5,
-      },
-    },
   };
 
   return (
@@ -318,8 +304,33 @@ const AnalysisPage = () => {
             </button>
           </TabPanel>
           <TabPanel>
-            <h3 className="font-bold text-3xl mt-8 mb-4">Daily Average Ratings</h3>
-            {/* <Line data={chartData} options={chartOptions} /> */}
+            <h3 className="font-bold text-3xl mt-8 mb-4">Your daily average song ratings from last month(s)</h3>
+            <label className="form-control w-full max-w-xs">
+              <div className="label">
+                <span className="label-text">Select Month</span>
+              </div>
+              <select
+                id="monthSelect"
+                value={selectedMonth2}
+                onChange={(e) => setSelectedMonth2(parseInt(e.target.value))}
+                className="select select-bordered select-primary w-full max-w-xs"
+              >
+                {months.map((month) => (
+                  <option key={month} value={parseInt(month)}>
+                    {parseInt(month)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {loading ? (
+            <div className="flex items-center justify-center">
+              <span className="loading loading-bars loading-lg"></span>
+            </div>
+            ) : (
+              <>
+                <Line data={dailyAverageRatingChartData} />
+              </>
+            )}
           </TabPanel>
         </Tabs>
       </div>
