@@ -65,7 +65,7 @@ const Navbar = () => {
                             </details>
                         </li>
                         <li><Link to="/song/import" className={isPathActive('/song/import') ? 'active' : ''}>Import Songs</Link></li>
-                        <li><a>Friends</a></li>
+                        <li><Link to="/friends" className={isPathActive('/friends') ? 'active' : ''}>Friends</Link></li>
                         <li><Link to="/analysis" className={isPathActive('/analysis') ? 'active' : ''}>Analysis</Link></li>
                     </ul>
                 </div>
@@ -89,7 +89,7 @@ const Navbar = () => {
                         </details>
                     </li>
                     <li><Link to="/song/import" className={isPathActive('/song/import') ? 'active' : ''}>Import Songs</Link></li>
-                    <li><a>Friends</a></li>
+                    <li><Link to="/friends" className={isPathActive('/friends') ? 'active' : ''}>Friends</Link></li>
                     <li><Link to="/analysis" className={isPathActive('/analysis') ? 'active' : ''}>Analysis</Link></li>
                 </ul>
             </div>

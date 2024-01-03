@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../services/axiosConfig';
-import showToast from '../showToast';
-import convertToMinutes from '../../utils/convertToMinutes';
+import axiosInstance from '../services/axiosConfig';
+import showToast from './showToast';
+import convertToMinutes from '../utils/convertToMinutes';
 
 const Recommendations = () => {
   const navigate = useNavigate();

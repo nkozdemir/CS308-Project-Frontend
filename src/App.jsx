@@ -14,6 +14,7 @@ import Navbar from './components/Navbar';
 import Navbar2 from './components/Navbar2';
 import Footer from './components/Footer';
 import ExportPerfRatings from './pages/ratings/ExportPerfRatings';
+import Friends from './pages/Friends';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/rating/performer/export" element={<ExportPerfRatings />} />
           <Route path="/song/import" element={<ImportSong />} />
           <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/friends" element={<Friends />} />
         </Route>
         <Route 
           path="/login" 

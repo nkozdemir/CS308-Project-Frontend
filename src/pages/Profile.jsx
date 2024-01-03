@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../services/axiosConfig';
 import showToast from '../components/showToast';
-import Recommendations from '../components/profile/Recommendations';
-import UserFriends from '../components/profile/UserFriends';
+import Recommendations from '../components/Recommendations';
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -69,8 +68,6 @@ const Profile = () => {
                         </div>
                         {userInfo.Name && userInfo.Email && (
                             <div>
-                                <div className="divider my-16"></div> 
-                                <UserFriends />
                                 <div className="divider my-16"></div> 
                                 <Recommendations />
                             </div>
