@@ -1,4 +1,5 @@
 import SongRecommendations from "../components/recommendations/SongRecommendations";
+import SongRecommendationsFriends from "../components/recommendations/SongRecommendationsFriends";
 import SongRecommendationsLatest from "../components/recommendations/SongRecommendationsLatest";
 import SongRecommendationsPerf from "../components/recommendations/SongRecommendationsPerf";
 
@@ -11,6 +12,8 @@ const RecommendationsPage = () => {
             <SongRecommendationsLatest />
             <div className="divider my-8"></div>
             <SongRecommendationsPerf />
+            <div className="divider my-8"></div>
+            <SongRecommendationsFriends />
         </div>
     );
 };
