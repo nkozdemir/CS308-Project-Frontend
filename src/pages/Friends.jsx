@@ -24,29 +24,23 @@ const Friends = () => {
       const response = await axiosInstance.get('/friend/getAllFriends');
 
       if (response.status === 200) {
-        if (response.data.data.length === 0) {
-          setNoFriends(true);
-        } else {
-          setFriendsInformation(response.data.data);
-          setFilteredFriends(response.data.data);
-        }
+        setFriendsInformation(response.data.data);
+        setFilteredFriends(response.data.data);
       }
     } catch (error) {
-      if (error.code === 404) {
-        setNoFriends(true);
-      } else {
-        if (error.response.status === 401 || error.response.status === 403) {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          showToast('warn', 'Your session has expired. Please log in again.');
-          setTimeout(() => {
-            navigate('/login');
-          }, 3000);
+        if (error.response.status === 404) {
+            setNoFriends(true);
+        } else if (error.response.status === 401 || error.response.status === 403) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            showToast('warn', 'Your session has expired. Please log in again.');
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
         } else {
-          console.error('Error fetching user info: ', error);
-          showToast('error', 'Error fetching user info. Please try again later.');
+            console.error('Error fetching user info: ', error);
+            showToast('error', 'Error fetching user friends info. Please try again later.');
         }
-      } 
     } finally {
       setLoadingFriends(false);
     }

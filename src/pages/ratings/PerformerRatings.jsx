@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import showToast from "../../components/showToast";
 import DisplayStarRating from "../../components/DisplayStarRating";
 import axiosInstance from "../../services/axiosConfig";
+import parseDate from "../../utils/parseDate";
 
 const PerformerRatings = () => {
     const navigate = useNavigate();
@@ -26,17 +27,14 @@ const PerformerRatings = () => {
             const response = await axiosInstance.get(`/rating/performer/get/userid`);
 
             if (response.status === 200) { 
-                if (response.data.data.length === 0) {
-                    setNoResults(true);
-                } else {
-                    //console.log("Performer ratings:", response.data.data);
-                    setRatingData(response.data.data);
-                    setFilteredRatingData(response.data.data);
-                }
+                //console.log("Performer ratings:", response.data.data);
+                setRatingData(response.data.data);
+                setFilteredRatingData(response.data.data);
             }
         } catch (error) {
-            setNoResults(true);
-            if (error.status === 401 || error.status === 403) {
+            if (error.response.status === 404) {
+                setNoResults(true);
+            } else if (error.status === 401 || error.status === 403) {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 showToast("warn", "Your session has expired. Please log in again.");
@@ -57,14 +55,12 @@ const PerformerRatings = () => {
             const response = await axiosInstance.get(`/performer/getAllPerformers`);
 
             if (response.status === 200) {
-                if (response.data.data.length === 0) {
-                    showToast('warn', 'No performers found.');
-                } else {
-                    setPerformerData(response.data.data);
-                }
+                setPerformerData(response.data.data);
             }
         } catch (error) {
-            if (error.response.status === 401 || error.response.status === 403) {
+            if (error.response.status === 404) {
+                showToast('warn', 'No performers found.');
+            } else if (error.response.status === 401 || error.response.status === 403) {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 showToast("warn", "Your session has expired. Please log in again.");
@@ -235,16 +231,16 @@ const PerformerRatings = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">
                         {filteredRatingData.map((rating) => (
                             <div key={rating.PerformerRatingID} className="card w-96 bg-base-100 shadow-xl">
-                                <figure>
-                                    {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[1] && (
+                                {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[1] && (
+                                    <figure>
                                         <img src={JSON.parse(rating.PerformerInfo.Image)[1].url} alt={rating.PerformerInfo.Name} />
-                                    )}
-                                </figure>
+                                    </figure>
+                                )}
                                 <div className="card-body">
                                     <h2 className="card-title">{rating.PerformerInfo.Name}</h2>
                                     <p>Rating: </p>
                                     <DisplayStarRating rating={rating.Rating} />
-                                    <p>Date: {rating.Date}</p>
+                                    <p>Date: {parseDate(rating.Date)}</p>
                                 </div>
                                 <div className="card-actions flex items-center justify-center mb-8">
                                     <button onClick={() => removeRating(parseInt(rating.PerformerRatingID))} disabled={operating} className="btn btn-error">

@@ -20,11 +20,7 @@ const SongRecommendationsFriends = () => {
       const response = await axiosInstance.post('/recommendation/friend/rating');
 
       if (response.status === 200) {
-        if (response.data.data.length === 0) {
-          setNoRecommendations(true);
-        } else {
-          setSongRecommendations(response.data.data);
-        }
+        setSongRecommendations(response.data.data);
       }
     } catch (error) {
       if (error.response.status === 404) {

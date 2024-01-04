@@ -4,6 +4,7 @@ import showToast from "../../components/showToast";
 import convertToMinutes from "../../utils/convertToMinutes";
 import DisplayStarRating from "../../components/DisplayStarRating";
 import axiosInstance from "../../services/axiosConfig";
+import parseDate from "../../utils/parseDate";
 
 const SongRatings = () => {
   const navigate = useNavigate();
@@ -23,13 +24,9 @@ const SongRatings = () => {
       const response = await axiosInstance.get('/rating/song/get/userid');
 
       if (response.status === 200) { 
-        if (response.data.data.length === 0) {
-          setNoResults(true);
-        } else {
-          //console.log("Song ratings:", response.data.data);
-          setRatingData(response.data.data);
-          setFilteredRatingData(response.data.data);
-        }
+        //console.log("Song ratings:", response.data.data);
+        setRatingData(response.data.data);
+        setFilteredRatingData(response.data.data);
       }
     } catch (error) {
       if (error.response.status === 404) {
@@ -122,11 +119,11 @@ const SongRatings = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredRatingData.map((rating) => (
               <div key={rating.SongRatingID} className="card w-96 bg-base-100 shadow-xl">
-                <figure>
-                  {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
+                {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
+                  <figure>
                     <img src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Image} />
-                  )}
-                </figure>
+                  </figure>
+                )}
                 <div className="card-body">
                   <h2 className="card-title">{rating.SongInfo.Title}</h2>
                   <p>Album: {rating.SongInfo.Album}</p>
@@ -134,7 +131,7 @@ const SongRatings = () => {
                   <p>Length: {convertToMinutes(rating.SongInfo.Length)}</p>
                   <p>Rating:</p> 
                   <DisplayStarRating rating={rating.Rating}/>
-                  <p>Date Created: {rating.Date}</p>
+                  <p>Date: {parseDate(rating.Date)}</p>
                 </div>
                 <div className="card-actions flex items-center justify-center mb-8">
                   <button onClick={() => removeRating(parseInt(rating.SongRatingID))} disabled={deleting} className="btn btn-error">

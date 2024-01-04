@@ -24,14 +24,10 @@ const UserSongs = () => {
       const response = await axiosInstance.get(`/song/getAllUserSongs`);
 
       if (response.status === 200) {
-        if (response.data.data.length === 0) {
-          setNoResults(true);
-        } else {
-          //console.log('User Songs:', response.data.data);
-          setUserSongs(response.data.data);
-          setFilteredSongs(response.data.data);
-          fetchSongRatings();
-        }
+        //console.log('User Songs:', response.data.data);
+        setUserSongs(response.data.data);
+        setFilteredSongs(response.data.data);
+        fetchSongRatings();
       }
     } catch (error) {
       if (error.response.status === 404) {
@@ -60,7 +56,9 @@ const UserSongs = () => {
         setSongRatings(response.data.data);
       }
     } catch (error) {
-      if (error.response.status === 401 || error.response.status === 403) {
+      if (error.response.status === 404) {
+        showToast("warn", "You have not rated any songs yet.");
+      } else if (error.response.status === 401 || error.response.status === 403) {
         showToast("warn", "Your session has expired. Please log in again.");
         setTimeout(() => {
           localStorage.removeItem("accessToken");
