@@ -42,13 +42,14 @@ const Login = () => {
         localStorage.setItem('refreshToken', refreshToken);
 
         navigate('/');
-      } else {
-        console.error('Login failed');
-        showToast('err', 'Login failed.');
-      }
+      } 
     } catch (error) {
-      console.error('Error during login:', error);
-      showToast('err', 'Error during login.');
+      if (error.response.status === 400 || error.response.status === 404) {
+        showToast('err', 'Wrong email or password.');
+      } else {
+        console.error('An error occurred during login:', error);
+        showToast('err', 'An error occurred during login.');
+      }
     } finally {
       setLoading(false);
     }

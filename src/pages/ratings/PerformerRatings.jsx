@@ -207,11 +207,11 @@ const PerformerRatings = () => {
                                 onChange={(e) => setRating(e.target.value)}
                             >
                                 <option value="" disabled>Pick one</option>
-                                <option value="1">1 Star</option>
-                                <option value="2">2 Stars</option>
-                                <option value="3">3 Stars</option>
-                                <option value="4">4 Stars</option>
-                                <option value="5">5 Stars</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
                             </select>
                         </label>
                     </div>
@@ -228,29 +228,49 @@ const PerformerRatings = () => {
                 ) : noResults ? (
                     <p className='flex items-center justify-center'>No recommendations found. You can rate performers from above.</p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">
-                        {filteredRatingData.map((rating) => (
-                            <div key={rating.PerformerRatingID} className="card w-96 bg-base-100 shadow-xl">
-                                {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[1] && (
-                                    <figure>
-                                        <img src={JSON.parse(rating.PerformerInfo.Image)[1].url} alt={rating.PerformerInfo.Name} />
-                                    </figure>
-                                )}
-                                <div className="card-body">
-                                    <h2 className="card-title">{rating.PerformerInfo.Name}</h2>
-                                    <p>Rating: </p>
-                                    <DisplayStarRating rating={rating.Rating} />
-                                    <p>Date: {parseDate(rating.Date)}</p>
-                                </div>
-                                <div className="card-actions flex items-center justify-center mb-8">
-                                    <button onClick={() => removeRating(parseInt(rating.PerformerRatingID))} disabled={operating} className="btn btn-error">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                                            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="overflow-x-auto shadow-lg">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Rating</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredRatingData.map((rating) => (
+                                    <tr key={rating.PerformerRatingID} className='hover'>
+                                        <td>
+                                            {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[2] && (
+                                                <figure>
+                                                    <img 
+                                                        src={JSON.parse(rating.PerformerInfo.Image)[2].url} 
+                                                        alt={rating.PerformerInfo.Name} 
+                                                        style={{ width: '100px', height: '100px' }}
+                                                    />
+                                                </figure>
+                                            )}
+                                        </td>
+                                        <td className="font-bold">{rating.PerformerInfo.Name}</td>
+                                        <td><DisplayStarRating rating={rating.Rating} /></td>
+                                        <td className="font-bold">{parseDate(rating.Date)}</td>
+                                        <td>
+                                            <button
+                                                onClick={() => removeRating(parseInt(rating.PerformerRatingID))}
+                                                disabled={operating}
+                                                className='btn btn-error btn-circle'
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512">
+                                                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

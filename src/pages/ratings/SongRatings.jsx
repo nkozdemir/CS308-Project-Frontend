@@ -116,32 +116,50 @@ const SongRatings = () => {
         ) : noResults ? (
           <p className='flex items-center justify-center'>No rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredRatingData.map((rating) => (
-              <div key={rating.SongRatingID} className="card w-96 bg-base-100 shadow-xl">
-                {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
-                  <figure>
-                    <img src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Image} />
-                  </figure>
-                )}
-                <div className="card-body">
-                  <h2 className="card-title">{rating.SongInfo.Title}</h2>
-                  <p>Album: {rating.SongInfo.Album}</p>
-                  <p>Release Date: {rating.SongInfo.ReleaseDate}</p>
-                  <p>Length: {convertToMinutes(rating.SongInfo.Length)}</p>
-                  <p>Rating:</p> 
-                  <DisplayStarRating rating={rating.Rating}/>
-                  <p>Date: {parseDate(rating.Date)}</p>
-                </div>
-                <div className="card-actions flex items-center justify-center mb-8">
-                  <button onClick={() => removeRating(parseInt(rating.SongRatingID))} disabled={deleting} className="btn btn-error">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              ))}
+          <div className="overflow-x-auto shadow-lg">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Title</th>
+                  <th>Album</th>
+                  <th>Release Date</th>
+                  <th>Length</th>
+                  <th>Rating</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRatingData.map((rating) => (
+                  <tr key={rating.SongRatingID}>
+                    <td>
+                      {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
+                        <figure>
+                          <img 
+                            src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Image}
+                            style={{ width: "100px", height: "100px" }} 
+                          />
+                        </figure>
+                      )}
+                    </td>
+                    <td className="font-bold">{rating.SongInfo.Title}</td>
+                    <td className="font-bold">{rating.SongInfo.Album}</td>
+                    <td className="font-bold">{rating.SongInfo.ReleaseDate}</td>
+                    <td className="font-bold">{convertToMinutes(rating.SongInfo.Length)}</td>
+                    <td><DisplayStarRating rating={rating.Rating}/></td>
+                    <td className="font-bold">{parseDate(rating.Date)}</td>
+                    <td>
+                      <button onClick={() => removeRating(parseInt(rating.SongRatingID))} disabled={deleting} className="btn btn-error btn-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512">
+                          <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

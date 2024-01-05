@@ -48,7 +48,7 @@ const ExportPerfRatings = () => {
             // window.URL.revokeObjectURL(url);
 
             // Display a success alert
-            showToast('success', 'File downloaded successfully.');
+            showToast('ok', 'File downloaded successfully.');
         } catch (error) {
             if (error.response.status === 404) {
                 showToast('warn', 'No ratings found for this performer.');
@@ -61,7 +61,7 @@ const ExportPerfRatings = () => {
                 }, 3000);
             } else {
                 console.error('Error downloading file:', error);
-                showToast('error', 'Error downloading file. Please try again.');
+                showToast('err', 'Error downloading file. Please try again.');
             }
         } finally {
             setLoading(false); // Set loading back to false when the download is complete or encounters an error
@@ -101,6 +101,8 @@ const ExportPerfRatings = () => {
 
         // Clean up by revoking the object URL
         window.URL.revokeObjectURL(downloadLink);
+
+        setDownloadLink(null);
     }
 
     useEffect(() => {

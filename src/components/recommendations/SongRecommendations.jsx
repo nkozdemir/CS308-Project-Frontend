@@ -33,7 +33,7 @@ const SongRecommendations = () => {
         }, 3000);
       } else {
         console.error('Error fetching song recommendations: ', error);
-        showToast('error', 'Error fetching song recommendations. Please try again later.');
+        showToast('err', 'Error fetching song recommendations. Please try again later.');
         setNoRecommendations(true);
       }
     } finally {
@@ -60,7 +60,7 @@ const SongRecommendations = () => {
         }, 3000);
       } else {
         console.error('Error during fetch', error);
-        showToast('error', 'Error adding song. Please try again later.');
+        showToast('err', 'Error adding song. Please try again later.');
       }
     } finally {
       setAddingSong(false);
@@ -102,43 +102,36 @@ const SongRecommendations = () => {
                   <th>Album</th>
                   <th>Release Date</th>
                   <th>Length</th>
-                  <th>Actions</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {songRecommendations.map((song) => (
                   <tr key={song.SpotifyId} className='hover'>
-                    <th>
+                    <td>
                       <figure>
-                        <img src={song.Album.images[2].url} alt={song.Title} />
+                        <img 
+                          src={song.Album.images[2].url} alt={song.Title} 
+                          style={{ width: '100px', height: '100px' }} 
+                        />
                       </figure>
-                    </th>
-                    <th>
-                      {song.Title}
-                    </th>
-                    <th>
-                      {song.Performer.map((performer) => performer.name).join(', ')}
-                    </th>
-                    <th>
-                      <p>{song.Album.name}</p>
-                    </th>
-                    <th>
-                      <p>{song.Album.release_date}</p>
-                    </th>
-                    <th>
-                      <p>{convertToMinutes(song.Length)}</p>
-                    </th>
-                    <th>
+                    </td>
+                    <td className="font-bold">{song.Title}</td>
+                    <td className="font-bold">{song.Performer.map((performer) => performer.name).join(', ')}</td>
+                    <td className="font-bold">{song.Album.name}</td>
+                    <td className="font-bold">{song.Album.release_date}</td>
+                    <td className="font-bold">{convertToMinutes(song.Length)}</td>
+                    <td>
                       <button 
                         onClick={() => addSong(song.SpotifyId)} 
                         disabled={addingSong}
-                        className='btn btn-success btn-circle btn-sm'
+                        className='btn btn-success btn-circle btn-md'
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 448 512">
                           <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
                         </svg>
                       </button>
-                    </th>
+                    </td>
                   </tr>
                 ))}
               </tbody>

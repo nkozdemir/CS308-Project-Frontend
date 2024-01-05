@@ -36,7 +36,7 @@ const Profile = () => {
             }
             else {
                 console.error('Error fetching user info: ', error);
-                showToast('error', 'Error fetching user info. Please try again later.');
+                showToast('err', 'Error fetching user info. Please try again later.');
             }
         } finally {
             setLoading(false);

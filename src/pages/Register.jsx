@@ -30,18 +30,14 @@ const Register = () => {
             });
             if (response.status === 200) {
               // Registration successful, redirect to the login page
-              showToast("success", "Registration successful.");
+              showToast("ok", "Registration successful.");
               setTimeout(() => {
                 navigate("/login");
               }, 3000);
-            } else {
-              // Handle registration failure, e.g., show an error message
-              console.error("Registration failed:", response.data);
-              showToast("err", "Registration failed.");
-            }
+            } 
         } catch (error) {
             console.error("Error during registration:", error.message);
-            showToast("err", "Error during registration.");
+            showToast("err", "An error occurred during registration.");
         } finally {
             setLoading(false);
         }
