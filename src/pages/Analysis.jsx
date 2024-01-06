@@ -221,8 +221,14 @@ const AnalysisPage = () => {
                   {topRatedSongsByDecade.map((song) => (
                     <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
                       <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] && (
+                        {song.Image && JSON.parse(song.Image)?.[1] ? (
                           <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                        ) : (
+                          <img 
+                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                            alt={song.Title} 
+                            style={{ width: "300px", height: "300px" }} 
+                          />
                         )}
                       </figure>
                       <div className="card-body">
@@ -283,8 +289,14 @@ const AnalysisPage = () => {
                   {topRatedSongsFromLastMonths.map((song) => (
                     <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
                       <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] && (
+                        {song.Image && JSON.parse(song.Image)?.[1] ? (
                           <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                        ) : (
+                          <img 
+                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                            alt={song.Title} 
+                            style={{ width: "300px", height: "300px" }} 
+                          />
                         )}
                       </figure>
                       <div className="card-body">

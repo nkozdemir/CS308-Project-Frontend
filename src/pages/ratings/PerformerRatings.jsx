@@ -22,6 +22,33 @@ const PerformerRatings = () => {
     const [loadingPerformers, setLoadingPerformers] = useState(false);
     const [noPerformers, setNoPerformers] = useState(false);
 
+    // Sorting
+    const [sortOrder, setSortOrder] = useState("desc");
+    const [sortColumn, setSortColumn] = useState("Date");
+
+    const handleSort = (column) => {
+        const isAsc = sortColumn === column && sortOrder === "asc";
+        const newSortOrder = isAsc ? "desc" : "asc";
+    
+        setSortOrder(newSortOrder);
+        setSortColumn(column);
+    
+        const sortedData = [...filteredRatingData].sort((a, b) => {
+        const aValue = column === "Rating" ? a[column] : new Date(a[column]);
+        const bValue = column === "Rating" ? b[column] : new Date(b[column]);
+    
+        if (aValue < bValue) {
+            return isAsc ? -1 : 1;
+        }
+        if (aValue > bValue) {
+            return isAsc ? 1 : -1;
+        }
+        return 0;
+        });
+    
+        setFilteredRatingData(sortedData);
+    };
+
     const fetchRatingData = async () => {
         try {
             setLoading(true); 
@@ -223,8 +250,18 @@ const PerformerRatings = () => {
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Rating</th>
-                                <th>Date</th>
+                                <th onClick={() => handleSort("Rating")}>
+                                    Rating
+                                    {sortColumn === "Rating" && (
+                                        <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                                    )}
+                                </th>
+                                <th onClick={() => handleSort("Date")}>
+                                    Date
+                                    {sortColumn === "Date" && (
+                                        <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                                    )}
+                                </th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -232,15 +269,21 @@ const PerformerRatings = () => {
                             {filteredRatingData.map((rating) => (
                                 <tr key={rating.PerformerRatingID} className='hover'>
                                     <td>
-                                        {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[2] && (
-                                            <figure>
+                                        <figure>
+                                            {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[2] ? (
                                                 <img 
                                                     src={JSON.parse(rating.PerformerInfo.Image)[2].url} 
                                                     alt={rating.PerformerInfo.Name} 
                                                     style={{ width: '100px', height: '100px' }}
                                                 />
-                                            </figure>
-                                        )}
+                                            ) : (
+                                                <img 
+                                                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                                                    alt={rating.PerformerInfo.Name} 
+                                                    style={{ width: '100px', height: '100px' }}
+                                                />
+                                            )}
+                                        </figure>
                                     </td>
                                     <td className="font-bold">{rating.PerformerInfo.Name}</td>
                                     <td><DisplayStarRating rating={rating.Rating} /></td>

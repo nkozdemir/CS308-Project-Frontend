@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import UserSongs from './pages/UserSongs';
+//import UserSongs from './pages/UserSongs';
 import SearchSong from './pages/SearchSong';
 import AddSong from './pages/AddSong';
 //import SongRatings from './pages/ratings/SongRatings';
@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 //import ExportPerfRatings from './pages/ratings/ExportPerfRatings';
 import Friends from './pages/Friends';
 import RatingPage from './pages/RatingPage';
+import LibraryPage from './pages/LibraryPage';
 
 const App = () => {
   return (
@@ -30,7 +31,8 @@ const App = () => {
           }
         >
           <Route path="/" element={<Home />} /> 
-          <Route path="/song/user" element={<UserSongs />} />
+          {/* <Route path="/song/user" element={<UserSongs />} /> */}
+          <Route path="/library" element={<LibraryPage />} />
           <Route path="/song/search" element={<SearchSong />} />
           <Route path="/song/add" element={<AddSong />} />
           <Route path="/rating" element={<RatingPage />} />

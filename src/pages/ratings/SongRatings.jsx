@@ -18,6 +18,33 @@ const SongRatings = () => {
   const [deleting, setDeleting] = useState(false); 
   const [noResults, setNoResults] = useState(false);
 
+  // Sorting
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState("Date");
+
+  const handleSort = (column) => {
+    const isAsc = sortColumn === column && sortOrder === "asc";
+    const newSortOrder = isAsc ? "desc" : "asc";
+  
+    setSortOrder(newSortOrder);
+    setSortColumn(column);
+  
+    const sortedData = [...filteredRatingData].sort((a, b) => {
+      const aValue = column === "Rating" ? a[column] : new Date(a[column]);
+      const bValue = column === "Rating" ? b[column] : new Date(b[column]);
+  
+      if (aValue < bValue) {
+        return isAsc ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return isAsc ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    setFilteredRatingData(sortedData);
+  };
+
   const fetchRatingData = async () => {
     try {
       setLoading(true); 
@@ -116,8 +143,18 @@ const SongRatings = () => {
                 <th>Album</th>
                 <th>Release Date</th>
                 <th>Length</th>
-                <th>Rating</th>
-                <th>Date</th>
+                <th onClick={() => handleSort("Rating")}>
+                  Rating
+                  {sortColumn === "Rating" && (
+                    <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                  )}
+                </th>
+                <th onClick={() => handleSort("Date")}>
+                  Date
+                  {sortColumn === "Date" && (
+                    <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                  )}
+                </th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -125,14 +162,20 @@ const SongRatings = () => {
               {filteredRatingData.map((rating) => (
                 <tr key={rating.SongRatingID}>
                   <td>
-                    {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
-                      <figure>
+                    <figure>
+                      {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] ? (
                         <img 
-                          src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Image}
+                          src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Title}
                           style={{ width: "100px", height: "100px" }} 
                         />
-                      </figure>
-                    )}
+                      ) : (
+                        <img 
+                          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                          alt={rating.SongInfo.Title} 
+                          style={{ width: "100px", height: "100px" }} 
+                        />
+                      )}
+                    </figure>
                   </td>
                   <td className="font-bold">{rating.SongInfo.Title}</td>
                   <td className="font-bold">{rating.SongInfo.Album}</td>
