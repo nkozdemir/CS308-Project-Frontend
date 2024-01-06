@@ -5,16 +5,17 @@ import Register from './pages/Register';
 import UserSongs from './pages/UserSongs';
 import SearchSong from './pages/SearchSong';
 import AddSong from './pages/AddSong';
-import SongRatings from './pages/ratings/SongRatings';
-import PerformerRatings from './pages/ratings/PerformerRatings';
+//import SongRatings from './pages/ratings/SongRatings';
+//import PerformerRatings from './pages/ratings/PerformerRatings';
 import PrivateRoutes from './PrivateRoutes';
 import ImportSong from './pages/ImportSong';
 import AnalysisPage from './pages/Analysis';
 import Navbar from './components/Navbar';
 import Navbar2 from './components/Navbar2';
 import Footer from './components/Footer';
-import ExportPerfRatings from './pages/ratings/ExportPerfRatings';
+//import ExportPerfRatings from './pages/ratings/ExportPerfRatings';
 import Friends from './pages/Friends';
+import RatingPage from './pages/RatingPage';
 
 const App = () => {
   return (
@@ -25,7 +26,6 @@ const App = () => {
             <>
               <Navbar />
               <PrivateRoutes />
-              <Footer />
             </>
           }
         >
@@ -33,9 +33,12 @@ const App = () => {
           <Route path="/song/user" element={<UserSongs />} />
           <Route path="/song/search" element={<SearchSong />} />
           <Route path="/song/add" element={<AddSong />} />
-          <Route path="/rating/song" element={<SongRatings />} />
-          <Route path="/rating/performer" element={<PerformerRatings />} />
-          <Route path="/rating/performer/export" element={<ExportPerfRatings />} />
+          <Route path="/rating" element={<RatingPage />} />
+          {/*
+            <Route path="/rating/song" element={<SongRatings />} />
+            <Route path="/rating/performer" element={<PerformerRatings />} />
+            <Route path="/rating/performer/export" element={<ExportPerfRatings />} />
+          */}
           <Route path="/song/import" element={<ImportSong />} />
           <Route path="/analysis" element={<AnalysisPage />} />
           <Route path="/friends" element={<Friends />} />

@@ -1,8 +1,8 @@
 const Footer = () => {
     return (
-        <footer className="footer items-center p-4 bg-inherit text-inherit w-full">
+        <footer className="footer items-center p-4 bg-inherit text-inherit w-full fixed bottom-0">
             <aside className="items-center grid-flow-col">
-                <p className="font-bold">HarmoniFuse, 2023 - 2024</p>
+                <p className="font-bold">HarmoniFuse, 2023</p>
             </aside> 
             <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
                 <button className="btn btn-ghost">

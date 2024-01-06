@@ -11,8 +11,8 @@ const PerformerRatings = () => {
     
     const [ratingData, setRatingData] = useState([]);
     const [performerData, setPerformerData] = useState([]);
-    const [selectedPerformer, setSelectedPerformer] = useState(1);
-    const [rating, setRating] = useState(1);
+    const [selectedPerformer, setSelectedPerformer] = useState(0);
+    const [rating, setRating] = useState(0);
     const [filteredRatingData, setFilteredRatingData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -76,9 +76,7 @@ const PerformerRatings = () => {
                 showToast("ok", "Rating deleted successfully.");
             }
         } catch (error) {
-            if (error.response.status === 404) {
-                showToast("warn", "Rating not found.");
-            } else if (error.response.status === 401 || error.response.status === 403) {
+            if (error.response.status === 401 || error.response.status === 403) {
                 handleSessionExpiration(navigate);
             } else {
                 console.error("Error during deleting rating:", error);
@@ -91,10 +89,6 @@ const PerformerRatings = () => {
     };
 
     const addRating = async () => {
-        if (rating < 1 || rating > 5) {
-            showToast("warn", "Rating must be between 1 and 5 (inclusive).");
-            return;
-        }
         try {
             setOperating(true); 
             showToast("info", "Adding rating...");
@@ -108,11 +102,11 @@ const PerformerRatings = () => {
 
             if (response.status === 200) { 
                 showToast("ok", "Rating added successfully.");
+                setSelectedPerformer(0);
+                setRating(0);
             }
         } catch (error) {
-            if (error.response.status === 404) {
-                showToast("warn", "Performer not found.");
-            } else if (error.response.status === 401 || error.response.status === 403) {
+            if (error.response.status === 401 || error.response.status === 403) {
                 handleSessionExpiration(navigate);
             } else {
                 console.error("Error during adding rating:", error);
@@ -145,116 +139,114 @@ const PerformerRatings = () => {
 
     return (
         <div>
-            <div className="my-20 p-4">
-                <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Performer Ratings</h1>
-                <div className="flex items-center justify-center">
-                    <input 
-                        className="input input-bordered input-primary" 
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-                <div className="join flex items-center justify-center my-8">
-                    <div className="join-item ml-8">
-                        <label className="form-control w-full max-w-xs">
-                            <div className="label">
-                                <span className="label-text">Choose Performer</span>
-                            </div>
-                            <select 
-                                className="select select-bordered select-primary"
-                                id="performer"
-                                value={selectedPerformer}
-                                onChange={(e) => setSelectedPerformer(e.target.value)}
-                            >
-                                <option value="" disabled>Pick one</option>
-                                {performerData.map((performer) => (
-                                    <option key={performer.PerformerID} value={performer.PerformerID}>
-                                        {performer.Name}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                    </div>
-                    <div className="join-item mx-8">
-                        <label className="form-control w-full max-w-xs">
-                            <div className="label">
-                                <span className="label-text">Select Rating</span>
-                            </div>
-                            <select 
-                                className="select select-bordered select-primary"
-                                id="rating"
-                                value={rating}
-                                onChange={(e) => setRating(e.target.value)}
-                            >
-                                <option value="" disabled>Pick one</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div className="join-item">
-                        <button onClick={addRating} disabled={operating} className="btn btn-primary mt-8">
-                            Add Rating
-                        </button>
-                    </div>
-                </div>
-                {loading ? (
-                    <div className="flex items-center justify-center">
-                        <span className="loading loading-bars loading-lg"></span>
-                    </div>
-                ) : noResults ? (
-                    <p className='flex items-center justify-center'>No recommendations found. You can rate performers from above.</p>
-                ) : (
-                    <div className="overflow-x-auto shadow-lg">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Rating</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredRatingData.map((rating) => (
-                                    <tr key={rating.PerformerRatingID} className='hover'>
-                                        <td>
-                                            {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[2] && (
-                                                <figure>
-                                                    <img 
-                                                        src={JSON.parse(rating.PerformerInfo.Image)[2].url} 
-                                                        alt={rating.PerformerInfo.Name} 
-                                                        style={{ width: '100px', height: '100px' }}
-                                                    />
-                                                </figure>
-                                            )}
-                                        </td>
-                                        <td className="font-bold">{rating.PerformerInfo.Name}</td>
-                                        <td><DisplayStarRating rating={rating.Rating} /></td>
-                                        <td className="font-bold">{parseDate(rating.Date)}</td>
-                                        <td>
-                                            <button
-                                                onClick={() => removeRating(parseInt(rating.PerformerRatingID))}
-                                                disabled={operating}
-                                                className='btn btn-error btn-circle'
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512">
-                                                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+            <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Performer Ratings</h1>
+            <div className="flex items-center justify-center">
+                <input 
+                    className="input input-bordered input-primary" 
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                />
             </div>
+            <div className="join flex items-center justify-center my-8">
+                <div className="join-item ml-8">
+                    <label className="form-control w-full max-w-xs">
+                        <div className="label">
+                            <span className="label-text">Choose Performer</span>
+                        </div>
+                        <select 
+                            className="select select-bordered select-primary"
+                            id="performer"
+                            value={selectedPerformer}
+                            onChange={(e) => setSelectedPerformer(e.target.value)}
+                        >
+                            <option value={0} disabled>Pick one</option>
+                            {performerData.map((performer) => (
+                                <option key={performer.PerformerID} value={performer.PerformerID}>
+                                    {performer.Name}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+                <div className="join-item mx-8">
+                    <label className="form-control w-full max-w-xs">
+                        <div className="label">
+                            <span className="label-text">Select Rating</span>
+                        </div>
+                        <select 
+                            className="select select-bordered select-primary"
+                            id="rating"
+                            value={rating}
+                            onChange={(e) => setRating(e.target.value)}
+                        >
+                            <option value={0} disabled>Pick one</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </label>
+                </div>
+                <div className="join-item">
+                    <button onClick={addRating} disabled={operating || selectedPerformer === 0 || rating === 0} className="btn btn-primary mt-8">
+                        Add Rating
+                    </button>
+                </div>
+            </div>
+            {loading ? (
+                <div className="flex items-center justify-center">
+                    <span className="loading loading-bars loading-lg"></span>
+                </div>
+            ) : noResults ? (
+                <p className='flex items-center justify-center'>No recommendations found. You can rate performers from above.</p>
+            ) : (
+                <div className="overflow-x-auto shadow-lg">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Rating</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredRatingData.map((rating) => (
+                                <tr key={rating.PerformerRatingID} className='hover'>
+                                    <td>
+                                        {rating.PerformerInfo.Image && JSON.parse(rating.PerformerInfo.Image)?.[2] && (
+                                            <figure>
+                                                <img 
+                                                    src={JSON.parse(rating.PerformerInfo.Image)[2].url} 
+                                                    alt={rating.PerformerInfo.Name} 
+                                                    style={{ width: '100px', height: '100px' }}
+                                                />
+                                            </figure>
+                                        )}
+                                    </td>
+                                    <td className="font-bold">{rating.PerformerInfo.Name}</td>
+                                    <td><DisplayStarRating rating={rating.Rating} /></td>
+                                    <td className="font-bold">{parseDate(rating.Date)}</td>
+                                    <td>
+                                        <button
+                                            onClick={() => removeRating(parseInt(rating.PerformerRatingID))}
+                                            disabled={operating}
+                                            className='btn btn-error btn-circle'
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512">
+                                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

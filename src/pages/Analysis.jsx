@@ -175,7 +175,7 @@ const AnalysisPage = () => {
   return (
     <div>
       <div className="my-20 p-4">
-        <h1 className="font-bold mb-4 flex items-center justify-center text-3xl">Analysis Page</h1>
+        {/* <h1 className="font-bold mb-4 flex items-center justify-center text-3xl">Analysis Page</h1> */}
         <div role="tablist" className="tabs tabs-boxed mb-8">
           <a role="tab" className={`tab${selectedTab === 0 ? ' tab-active' : ''}`} onClick={() => handleTabChange(0)}>
             Your Favourite Songs By Decade

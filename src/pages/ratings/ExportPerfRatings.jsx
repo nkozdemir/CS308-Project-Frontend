@@ -49,7 +49,8 @@ const ExportPerfRatings = () => {
             // window.URL.revokeObjectURL(url);
 
             // Display a success alert
-            showToast('ok', 'File downloaded successfully.');
+            showToast('ok', 'File downloaded successfully!');
+            setPerformerName(''); // Reset the performer name
         } catch (error) {
             if (error.response.status === 404) {
                 showToast('warn', 'No ratings found for this performer.');
@@ -101,8 +102,8 @@ const ExportPerfRatings = () => {
     }, []);
 
     return (
-        <div className='my-20 p-4'>
-            <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Performer Ratings</h1>
+        <div>
+            <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Song Ratings</h1>
             <div className='join flex items-center justify-center mb-16'> 
                 <div className='join-item'>
                     <label className="form-control w-full max-w-xs">

@@ -54,6 +54,8 @@ const Navbar = () => {
                         <li><Link to="/song/user" className={isPathActive('/song/user') ? 'active' : ''}>Your Songs</Link></li>
                         <li><Link to="/song/search" className={isPathActive('/song/search') ? 'active' : ''}>Search Song</Link></li>
                         <li><Link to="/song/add" className={isPathActive('/song/add') ? 'active' : ''}>Add Song</Link></li>
+                        <li><Link to="/rating" className={isPathActive('/rating') ? 'active' : ''}>Ratings</Link></li>
+                        {/*
                         <li>
                             <details>
                                 <summary>Ratings</summary>
@@ -64,6 +66,7 @@ const Navbar = () => {
                                 </ul>
                             </details>
                         </li>
+                        */}
                         <li><Link to="/song/import" className={isPathActive('/song/import') ? 'active' : ''}>Import Songs</Link></li>
                         <li><Link to="/friends" className={isPathActive('/friends') ? 'active' : ''}>Friends</Link></li>
                         <li><Link to="/analysis" className={isPathActive('/analysis') ? 'active' : ''}>Analysis</Link></li>
@@ -78,16 +81,7 @@ const Navbar = () => {
                     <li><Link to="/song/user" className={isPathActive('/song/user') ? 'active' : ''}>Your Songs</Link></li>
                     <li><Link to="/song/search" className={isPathActive('/song/search') ? 'active' : ''}>Search Song</Link></li>
                     <li><Link to="/song/add" className={isPathActive('/song/add') ? 'active' : ''}>Add Song</Link></li>
-                    <li>
-                        <details>
-                            <summary>Ratings</summary>
-                            <ul className="p-2">
-                                <li><Link to="/rating/song" className={isPathActive('/rating/song') ? 'active' : ''}>Your Song Ratings</Link></li>
-                                <li><Link to="/rating/performer" className={isPathActive('/rating/performer') ? 'active' : ''}>Your Performer Ratings</Link></li>
-                                <li><Link to="/rating/performer/export" className={isPathActive('/rating/performer/export') ? 'active' : ''}>Export Performer Ratings</Link></li>
-                            </ul>
-                        </details>
-                    </li>
+                    <li><Link to="/rating" className={isPathActive('/rating') ? 'active' : ''}>Ratings</Link></li>
                     <li><Link to="/song/import" className={isPathActive('/song/import') ? 'active' : ''}>Import Songs</Link></li>
                     <li><Link to="/friends" className={isPathActive('/friends') ? 'active' : ''}>Friends</Link></li>
                     <li><Link to="/analysis" className={isPathActive('/analysis') ? 'active' : ''}>Analysis</Link></li>
