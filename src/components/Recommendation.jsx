@@ -1,86 +1,90 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axiosInstance from '../../services/axiosConfig';
-import showToast from '../showToast';
-import convertToMinutes from '../../utils/convertToMinutes';
+import axiosInstance from '../services/axiosConfig';
+import showToast from './showToast';
+import convertToMinutes from '../utils/convertToMinutes';
 
-const SongRecommendationsLatest = () => {
+const Recommendation = ({ endpoint, buttonText, initialFetch = false, noRecText, noRecLink }) => {
   const navigate = useNavigate();
 
-  const [songRecommendations, setSongRecommendations] = useState([]);
-  const [loadingSongRecommendations, setLoadingSongRecommendations] = useState(false);
-  const [addingSong, setAddingSong] = useState(false);
-  const [noRecommendations, setNoRecommendations] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [addingItem, setAddingItem] = useState(false);
+  const [noRecommendations, setNoRecommendations] = useState(true);
 
-  const getSongRecommendations = async () => {
+  const fetchData = async () => {
     try {
-      setLoadingSongRecommendations(true);
+      setLoadingRecommendations(true);
       setNoRecommendations(false);
-      const response = await axiosInstance.post('/recommendation/song/latest');
+      const response = await axiosInstance.post(endpoint);
 
       if (response.status === 200) {
-        setSongRecommendations(response.data.data);
+        setRecommendations(response.data.data);
       }
     } catch (error) {
-      if (error.response.status === 404) {
-        setNoRecommendations(true);
-      } else if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        showToast('warn', 'Your session has expired. Please log in again.');
-        setTimeout(() => {
-            navigate('/login');
-        }, 3000);
-      } else {
-        console.error('Error fetching song recommendations: ', error);
-        showToast('err', 'Error fetching song recommendations. Please try again later.');
-        setNoRecommendations(true);
-      }
+      handleFetchError(error);
     } finally {
-      setLoadingSongRecommendations(false);
+      setLoadingRecommendations(false);
     }
   };
 
-  const addSong = async (spotifyId) => {
+  const handleFetchError = (error) => {
+    if (error.response.status === 404) {
+      setNoRecommendations(true);
+    } else if (error.response.status === 401 || error.response.status === 403) {
+      handleSessionExpiration();
+    } else {
+      console.error(`Error fetching recommendations from ${endpoint}: `, error);
+      showToast('err', `Error fetching recommendations. Please try again later.`);
+      setNoRecommendations(true);
+    }
+  };
+
+  const handleSessionExpiration = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    showToast('warn', 'Your session has expired. Please log in again.');
+    setTimeout(() => {
+      navigate('/login');
+    }, 3000);
+  };
+
+  const addItem = async (itemId) => {
     try {
-      setAddingSong(true);
+      setAddingItem(true);
       showToast('info', 'Adding song...');
-      const response = await axiosInstance.post('/song/addSpotifySong', { spotifyId });
+      const response = await axiosInstance.post(`/song/addSpotifySong`, { spotifyId: itemId });
 
       if (response.status === 200) {
         showToast('ok', 'Song added successfully!');
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        showToast('warn', 'Your session has expired. Please log in again.');
-        setTimeout(() => {
-            navigate('/login');
-        }, 3000);
+        handleSessionExpiration();
       } else {
         console.error('Error during fetch', error);
         showToast('err', 'Error adding song. Please try again later.');
       }
     } finally {
-      setAddingSong(false);
+      setAddingItem(false);
     }
   };
 
   useEffect(() => {
-    getSongRecommendations();
-  }, []);
+    if (initialFetch) fetchData();
+  }, []); 
 
   return (
     <div>
       <div className='flex items-center justify-center mb-8'>
-        <h2 className='font-bold text-2xl'>Based On Your Latest Added Songs</h2>
+        <h3 className='font-bold text-2xl'>{buttonText}</h3>
         <button
           onClick={() => {
             setNoRecommendations(false);
-            getSongRecommendations();
+            fetchData();
           }}
-          disabled={loadingSongRecommendations}
+          disabled={loadingRecommendations}
           className='btn btn-info btn-circle btn-sm ml-4'
         >
           <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512">
@@ -88,12 +92,21 @@ const SongRecommendationsLatest = () => {
           </svg>
         </button>
       </div>
-      {loadingSongRecommendations ? (
-        <div className="flex items-center justify-center">
+      {loadingRecommendations ? (
+        <div className="flex items-center justify-center mt-8">
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noRecommendations ? (
-        <p className='flex items-center justify-center'>No recommendations found. You add songs from <Link to="/song/search" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+        <p className='flex items-center justify-center'>
+          No recommendations found. {noRecText && (
+            <>
+              {noRecText}
+              <Link to={noRecLink || null} className="text-indigo-600 hover:text-indigo-700 ml-1">
+                here
+              </Link>.
+            </>
+          )}
+        </p>
       ) : (
         <>
           <div className="overflow-x-auto shadow-lg">
@@ -110,14 +123,11 @@ const SongRecommendationsLatest = () => {
                 </tr>
               </thead>
               <tbody>
-                {songRecommendations.map((song) => (
+                {recommendations.map((song) => (  
                   <tr key={song.SpotifyId} className='hover'>
                     <td>
                       <figure>
-                        <img 
-                          src={song.Album.images[2].url} alt={song.Title} 
-                          style={{ width: '100px', height: '100px' }} 
-                        />
+                        <img src={song.Album.images[2].url} alt={song.Title} style={{ width: '100px', height: '100px' }} />
                       </figure>
                     </td>
                     <td className="font-bold">{song.Title}</td>
@@ -126,10 +136,10 @@ const SongRecommendationsLatest = () => {
                     <td className="font-bold">{song.Album.release_date}</td>
                     <td className="font-bold">{convertToMinutes(song.Length)}</td>
                     <td>
-                      <button 
-                        onClick={() => addSong(song.SpotifyId)} 
-                        disabled={addingSong}
-                        className='btn btn-success btn-circle'
+                      <button
+                        onClick={() => addItem(song.SpotifyId)}
+                        disabled={addingItem}
+                        className='btn btn-success btn-circle btn-md'
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 448 512">
                           <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
@@ -147,4 +157,4 @@ const SongRecommendationsLatest = () => {
   );
 };
 
-export default SongRecommendationsLatest;
+export default Recommendation;
