@@ -11,16 +11,13 @@ const ExportPerfRatings = () => {
     const [performerData, setPerformerData] = useState([]);
     const [performerName, setPerformerName] = useState('');
     const [downloadLink, setDownloadLink] = useState(null);
+
     const [loading, setLoading] = useState(false);
+    const [loadingPerformers, setLoadingPerformers] = useState(false);
+    const [noPerformers, setNoPerformers] = useState(false);
 
     const handleDownload = async () => {
         try {
-            // Check if performer name is empty
-            if (!performerName) {
-                showToast('warn', 'Please provide a performer name.');
-                return;
-            }
-
             setLoading(true); // Set loading to true when starting the download
             showToast('info', 'Downloading file...');
 
@@ -52,9 +49,7 @@ const ExportPerfRatings = () => {
             showToast('ok', 'File downloaded successfully!');
             setPerformerName(''); // Reset the performer name
         } catch (error) {
-            if (error.response.status === 404) {
-                showToast('warn', 'No ratings found for this performer.');
-            } else if (error.response.status === 401 || error.response.status === 403) {
+            if (error.response.status === 401 || error.response.status === 403) {
                 handleSessionExpiration(navigate);
             } else {
                 console.error('Error during downloading file:', error);
@@ -67,20 +62,23 @@ const ExportPerfRatings = () => {
 
     const fetchPerformers = async () => {
         try {
-            const response = await axiosInstance.get(`/performer/getAllPerformers`);
+            setLoadingPerformers(true);
+            const response = await axiosInstance.get(`/rating/song/get/performers`);
 
             if (response.status === 200) {
                 setPerformerData(response.data.data);
             }
         } catch (error) {
             if (error.response.status === 404) {
-                showToast('warn', 'No performers found.');
+                setNoPerformers(true);
             } else if (error.response.status === 401 || error.response.status === 403) {
                 handleSessionExpiration(navigate);
             } else {
                 console.error("Error during fetching performer data:", error);
                 showToast("err", "An error occurred while fetching performer data.");
             }
+        } finally {
+            setLoadingPerformers(false);
         }
     };
 
@@ -105,6 +103,11 @@ const ExportPerfRatings = () => {
         <div>
             <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Song Ratings</h1>
             <div className='join flex items-center justify-center mb-16'> 
+                {loadingPerformers && (
+                    <div className='join-item mr-8 mt-8'>
+                        <span className="loading loading-spinner loading-lg"></span>
+                    </div>
+                )}
                 <div className='join-item'>
                     <label className="form-control w-full max-w-xs">
                         <div className="label">
@@ -115,6 +118,7 @@ const ExportPerfRatings = () => {
                             id="performer"
                             value={performerName}
                             onChange={(e) => setPerformerName(e.target.value)}
+                            disabled={loadingPerformers || loading || noPerformers}
                         >
                             <option value="" disabled>Pick one</option>
                             {performerData.map((performer) => (
@@ -136,6 +140,9 @@ const ExportPerfRatings = () => {
                     </button>
                 </div>
             </div>
+            {noPerformers && (
+                <p className='flex items-center justify-center'>No performer data found. You must rate performers first.</p>
+            )}
             {downloadLink && (
                 <div className='flex items-center justify-center'>
                     <button onClick={() => downloadFromLink()}>

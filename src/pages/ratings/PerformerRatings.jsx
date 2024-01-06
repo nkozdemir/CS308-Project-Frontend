@@ -19,6 +19,8 @@ const PerformerRatings = () => {
     const [loading, setLoading] = useState(false);
     const [operating, setOperating] = useState(false); 
     const [noResults, setNoResults] = useState(false);
+    const [loadingPerformers, setLoadingPerformers] = useState(false);
+    const [noPerformers, setNoPerformers] = useState(false);
 
     const fetchRatingData = async () => {
         try {
@@ -48,26 +50,29 @@ const PerformerRatings = () => {
 
     const fetchPerformers = async () => {
         try {
-            const response = await axiosInstance.get(`/performer/getAllPerformers`);
+            setLoadingPerformers(true);
+            const response = await axiosInstance.get(`/rating/song/get/performers`);
 
             if (response.status === 200) {
                 setPerformerData(response.data.data);
             }
         } catch (error) {
             if (error.response.status === 404) {
-                showToast('warn', 'No performers found.');
+                setNoPerformers(true);
             } else if (error.response.status === 401 || error.response.status === 403) {
                 handleSessionExpiration(navigate);
             } else {
                 console.error("Error during fetching performer data:", error);
                 showToast("err", "An error occurred while fetching performer data.");
             }
+        } finally {
+            setLoadingPerformers(false);
         }
     };
 
     const removeRating = async (performerRatingId) => {
         try {
-            setOperating(true); // Set deleting to true before making the API request
+            setOperating(true);
             showToast("info", "Deleting rating...");
 
             const response = await axiosInstance.post(`/rating/performer/delete/performerratingid`, { performerRatingId });
@@ -146,10 +151,16 @@ const PerformerRatings = () => {
                     placeholder="Search"
                     value={searchQuery}
                     onChange={handleSearchChange}
+                    disabled={loading || operating || noPerformers || noResults}
                 />
             </div>
             <div className="join flex items-center justify-center my-8">
-                <div className="join-item ml-8">
+                {loadingPerformers && (
+                    <div className='join-item mr-8 mt-8'>
+                        <span className="loading loading-spinner loading-lg"></span>
+                    </div>
+                )}
+                <div className="join-item">
                     <label className="form-control w-full max-w-xs">
                         <div className="label">
                             <span className="label-text">Choose Performer</span>
@@ -159,6 +170,7 @@ const PerformerRatings = () => {
                             id="performer"
                             value={selectedPerformer}
                             onChange={(e) => setSelectedPerformer(e.target.value)}
+                            disabled={loadingPerformers || operating || noPerformers}
                         >
                             <option value={0} disabled>Pick one</option>
                             {performerData.map((performer) => (
@@ -179,6 +191,7 @@ const PerformerRatings = () => {
                             id="rating"
                             value={rating}
                             onChange={(e) => setRating(e.target.value)}
+                            disabled={loadingPerformers || operating || noPerformers}
                         >
                             <option value={0} disabled>Pick one</option>
                             <option value="1">1</option>
@@ -190,7 +203,7 @@ const PerformerRatings = () => {
                     </label>
                 </div>
                 <div className="join-item">
-                    <button onClick={addRating} disabled={operating || selectedPerformer === 0 || rating === 0} className="btn btn-primary mt-8">
+                    <button onClick={addRating} disabled={operating || loadingPerformers || selectedPerformer === 0 || rating === 0} className="btn btn-primary mt-8">
                         Add Rating
                     </button>
                 </div>
@@ -199,8 +212,10 @@ const PerformerRatings = () => {
                 <div className="flex items-center justify-center">
                     <span className="loading loading-bars loading-lg"></span>
                 </div>
+            ) : noPerformers ? (
+                <p className='flex items-center justify-center'>No performer data found. You must rate songs first.</p>
             ) : noResults ? (
-                <p className='flex items-center justify-center'>No recommendations found. You can rate performers from above.</p>
+                <p className='flex items-center justify-center'>No performer rating data found. You can rate performers from above.</p>
             ) : (
                 <div className="overflow-x-auto shadow-lg">
                     <table className="table">

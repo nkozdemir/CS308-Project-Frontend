@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Tab1Component from './ratings/SongRatings'; 
-import Tab2Component from './ratings/PerformerRatings'; 
-import Tab3Component from './ratings/ExportPerfRatings'; 
+import Tab3Component from './ratings/PerformerRatings'; 
+import Tab2Component from './ratings/ExportPerfRatings'; 
 
 const RatingPage = () => {
   // State to manage the active tab
@@ -27,14 +27,14 @@ const RatingPage = () => {
           className={`tab ${activeTab === 2 ? 'tab-active' : ''}`}
           onClick={() => handleTabClick(2)}
         >
-          Performer Ratings
+          Export Song Ratings
         </a>
         <a
           role="tab"
           className={`tab ${activeTab === 3 ? 'tab-active' : ''}`}
           onClick={() => handleTabClick(3)}
         >
-          Export Song Ratings
+          Performer Ratings
         </a>
       </div>
 

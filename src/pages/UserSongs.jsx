@@ -64,11 +64,11 @@ const UserSongs = () => {
   };
 
   const rateSong = async (songID, ratingData) => {
-    if (ratingData == null || ratingData < 1 || ratingData > 5) {
-      showToast("warn", "Please select a rating between 1 and 5.");
-      return;
-    }
     try {
+      if (!ratingData || ratingData < 1 || ratingData > 5) {
+        showToast("warn", "Please provide a rating between 1 and 5.");
+        return;
+      }
       setOperating(true);
       showToast("info", "Rating song...");
 
@@ -147,6 +147,7 @@ const UserSongs = () => {
               placeholder="Search"
               value={searchQuery}
               onChange={handleSearchChange}
+              disabled={loading || operating || noResults}
             />
           </div>
         </div>

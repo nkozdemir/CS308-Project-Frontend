@@ -14,7 +14,7 @@ const Friends = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
 
-  const [loadingFriends, setLoadingFriends] = useState(true);
+  const [loadingFriends, setLoadingFriends] = useState(false);
   const [noFriends, setNoFriends] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [noResults, setNoResults] = useState(false);
@@ -151,9 +151,12 @@ const Friends = () => {
                     placeholder="Find"
                     value={filterQuery}
                     onChange={handleFilter}
+                    disabled={loadingFriends || noFriends}
                 />
             </div>
-            <p className='flex items-center justify-center mb-8'>You have {friendsInformation.length === 0 ? "no" : friendsInformation.length} friends.</p>
+            {!noFriends && (
+                <p className='flex items-center justify-center mb-8'>You have {friendsInformation.length} friends.</p>
+            )}
             {loadingFriends ? (
                 <div className="flex items-center justify-center">
                     <span className="loading loading-bars loading-lg"></span>
