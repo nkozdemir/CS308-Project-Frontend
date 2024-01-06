@@ -142,8 +142,8 @@ const Friends = () => {
   }, [searchQuery]);
 
   return (
-    <div className='flex w-full h-screen my-20 p-4'>
-        <div className='w-1/2'>
+    <div className='flex flex-col md:flex-row w-full h-screen my-20 p-4'>
+        <div className='w-full md:w-1/2 mb-8 md:mb-0'>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Friends</h1>
             <div className="flex items-center justify-center mb-16">
                 <input 
@@ -170,7 +170,7 @@ const Friends = () => {
             )}
         </div>
         <div className='divider divider-horizontal'></div>
-        <div className='w-1/2'>
+        <div className='w-full md:w-1/2'>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Add Friends</h1>
             <div className="flex items-center justify-center mb-16">
                 <input 

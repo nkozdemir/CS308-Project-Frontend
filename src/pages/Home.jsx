@@ -46,7 +46,7 @@ const Home = () => {
     return (
         <div className="my-20 p-4">
             {loading ? (
-                <div className="flex items-center justify-center h-screen">
+                <div className="flex items-center justify-center">
                     <div className="flex items-center justify-center">
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
