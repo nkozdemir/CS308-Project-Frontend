@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import showToast from "../components/showToast";
 import axiosInstance from "../services/axiosConfig";
+import handleSessionExpiration from "../utils/sessionUtils";
 
 const SearchSong = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const SearchSong = () => {
       setIsLoading(true); // Set isLoading to true before making the API request
 
       if (!trackName) {
-        showToast("warn", "Please enter track name.");
+        showToast("warn", "Please provide track name.");
         return;
       }
 
@@ -39,15 +40,10 @@ const SearchSong = () => {
       if (error.response.status === 404) {
         setNoResults(true);
       } else if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => { 
-          navigate("/login"); 
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error fetching search results:", error.message);
-        showToast("err", "Error fetching search results.");
+        console.error("Error during fetching search results:", error.message);
+        showToast("err", "An error occurred while fetching search results.");
       }
     } finally {
       setIsLoading(false); // Set isLoading to false after the API request is completed
@@ -65,19 +61,14 @@ const SearchSong = () => {
         });
 
       if (response.status === 200) {
-        showToast("ok", "Song added successfully.");
+        showToast("ok", "Song added successfully!");
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => { 
-          navigate("/login"); 
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error adding song:", error.message);
-        showToast("err", "Error adding song.");
+        console.error("Error during adding song:", error.message);
+        showToast("err", "An error occurred while adding song.");
       }
     } finally {
       setIsAdding(false); // Set isAdding to false after adding the song

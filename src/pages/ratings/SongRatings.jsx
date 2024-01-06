@@ -5,6 +5,7 @@ import convertToMinutes from "../../utils/convertToMinutes";
 import DisplayStarRating from "../../components/DisplayStarRating";
 import axiosInstance from "../../services/axiosConfig";
 import parseDate from "../../utils/parseDate";
+import handleSessionExpiration from "../../utils/sessionUtils";
 
 const SongRatings = () => {
   const navigate = useNavigate();
@@ -32,15 +33,10 @@ const SongRatings = () => {
       if (error.response.status === 404) {
         setNoResults(true);
       } else if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-            navigate("/login");
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during fetch", error);
-        showToast("err", "Error fetching ratings.");
+        console.error("Error during fetching rating data:", error);
+        showToast("err", "An error occurred while fetching rating data.");
       }
     } finally {
       setLoading(false); // Set loading to false after the API request is completed
@@ -59,15 +55,10 @@ const SongRatings = () => {
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-            navigate("/login");
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error deleting rating:", error);
-        showToast("err", "Error deleting rating.");
+        console.error("Error during deleting rating:", error);
+        showToast("err", "An error occurred while deleting rating.");
       }
     } finally {
       setDeleting(false); 

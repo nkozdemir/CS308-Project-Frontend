@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../services/axiosConfig';
 import showToast from '../components/showToast';
 import FriendsTable from '../components/FriendsTable';
+import handleSessionExpiration from '../utils/sessionUtils';
 
 const Friends = () => {
   const navigate = useNavigate();
@@ -32,15 +33,10 @@ const Friends = () => {
         if (error.response.status === 404) {
             setNoFriends(true);
         } else if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error fetching user info: ', error);
-            showToast('error', 'Error fetching user friends info. Please try again later.');
+            console.error('Error during fetching friends information: ', error);
+            showToast('err', 'An error occurred while fetching friends information.');
         }
     } finally {
       setLoadingFriends(false);
@@ -63,15 +59,10 @@ const Friends = () => {
       }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error searching for friends:', error);
-            showToast('error', 'Error searching for friends. Please try again later.');
+            console.error('Error during searching:', error);
+            showToast('err', 'An error occurred while searching.');
         }
     } finally {
       setLoadingSearch(false);
@@ -90,15 +81,10 @@ const Friends = () => {
         }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error during fetch', error);
-            showToast('error', 'Error adding friend. Please try again later.');
+            console.error('Error during adding friend:', error);
+            showToast('err', 'An error occurred while adding friend.');
         }
     } finally {
         setOperating(false);
@@ -118,15 +104,10 @@ const Friends = () => {
         }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error during fetch', error);
-            showToast('error', 'Error removing friend. Please try again later.');
+            console.error('Error during removing friend:', error);
+            showToast('err', 'An error occurred while removing friend.');
         }
     } finally {
         setOperating(false);

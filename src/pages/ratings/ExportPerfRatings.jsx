@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import showToast from '../../components/showToast';
 import axiosInstance from '../../services/axiosConfig';
+import handleSessionExpiration from '../../utils/sessionUtils';
 
 const ExportPerfRatings = () => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const ExportPerfRatings = () => {
         try {
             // Check if performer name is empty
             if (!performerName) {
-                showToast('warn', 'Please enter a performer name.');
+                showToast('warn', 'Please provide a performer name.');
                 return;
             }
 
@@ -53,15 +54,10 @@ const ExportPerfRatings = () => {
             if (error.response.status === 404) {
                 showToast('warn', 'No ratings found for this performer.');
             } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                showToast('warn', 'Your session has expired. Please log in again.');
-                setTimeout(() => {
-                    navigate('/login');
-                }, 3000);
+                handleSessionExpiration(navigate);
             } else {
-                console.error('Error downloading file:', error);
-                showToast('err', 'Error downloading file. Please try again.');
+                console.error('Error during downloading file:', error);
+                showToast('err', 'An error occurred while downloading the file.');
             }
         } finally {
             setLoading(false); // Set loading back to false when the download is complete or encounters an error
@@ -79,15 +75,10 @@ const ExportPerfRatings = () => {
             if (error.response.status === 404) {
                 showToast('warn', 'No performers found.');
             } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                showToast("warn", "Your session has expired. Please log in again.");
-                setTimeout(() => {
-                    navigate("/login");
-                } , 3000);
+                handleSessionExpiration(navigate);
             } else {
                 console.error("Error during fetching performer data:", error);
-                showToast("err", "Error fetching performers.");
+                showToast("err", "An error occurred while fetching performer data.");
             }
         }
     };

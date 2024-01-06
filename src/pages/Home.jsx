@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axiosConfig";
 import showToast from "../components/showToast";
 import RecommendationsPage from "./RecommendationsPage";
+import handleSessionExpiration from "../utils/sessionUtils";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -27,16 +28,11 @@ const Home = () => {
             updateUserInfo('Email', response.data.data.Email);
         } catch (error) {
             if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                showToast('warn', 'Session expired. Redirecting to login page...');
-                setTimeout(() => {
-                    navigate("/login");
-                }, 3000);
+                handleSessionExpiration(navigate);
             }
             else {
-                console.error('Error fetching user info: ', error);
-                showToast('err', 'Error fetching user info. Please try again later.');
+                console.error('Error during fetching user info: ', error);
+                showToast('err', 'An error occurred while fetching user info.');
             }
         } finally {
             setLoading(false);

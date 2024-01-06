@@ -4,6 +4,7 @@ import showToast from "../../components/showToast";
 import DisplayStarRating from "../../components/DisplayStarRating";
 import axiosInstance from "../../services/axiosConfig";
 import parseDate from "../../utils/parseDate";
+import handleSessionExpiration from "../../utils/sessionUtils";
 
 const PerformerRatings = () => {
     const navigate = useNavigate();
@@ -35,15 +36,10 @@ const PerformerRatings = () => {
             if (error.response.status === 404) {
                 setNoResults(true);
             } else if (error.status === 401 || error.status === 403) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                showToast("warn", "Your session has expired. Please log in again.");
-                setTimeout(() => {
-                    navigate("/login");
-                } , 3000);
+                handleSessionExpiration(navigate);
             } else {
                 console.error("Error during fetching rating data:", error);
-                showToast("err", "Error fetching ratings.");
+                showToast("err", "An error occurred while fetching rating data.");
             }
         } finally {
             setLoading(false); 
@@ -61,15 +57,10 @@ const PerformerRatings = () => {
             if (error.response.status === 404) {
                 showToast('warn', 'No performers found.');
             } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                showToast("warn", "Your session has expired. Please log in again.");
-                setTimeout(() => {
-                    navigate("/login");
-                } , 3000);
+                handleSessionExpiration(navigate);
             } else {
                 console.error("Error during fetching performer data:", error);
-                showToast("err", "Error fetching performers.");
+                showToast("err", "An error occurred while fetching performer data.");
             }
         }
     };
@@ -88,15 +79,10 @@ const PerformerRatings = () => {
             if (error.response.status === 404) {
                 showToast("warn", "Rating not found.");
             } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                showToast("warn", "Your session has expired. Please log in again.");
-                setTimeout(() => {
-                    navigate("/login");
-                } , 3000);
+                handleSessionExpiration(navigate);
             } else {
-                console.error("Error during fetch", error);
-                showToast("err", "Error deleting rating.");
+                console.error("Error during deleting rating:", error);
+                showToast("err", "An error occurred while deleting rating.");
             }
         } finally {
             setOperating(false); 
@@ -106,7 +92,7 @@ const PerformerRatings = () => {
 
     const addRating = async () => {
         if (rating < 1 || rating > 5) {
-            showToast("warn", "Rating must be between 1 and 5.");
+            showToast("warn", "Rating must be between 1 and 5 (inclusive).");
             return;
         }
         try {
@@ -127,15 +113,10 @@ const PerformerRatings = () => {
             if (error.response.status === 404) {
                 showToast("warn", "Performer not found.");
             } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                showToast("warn", "Your session has expired. Please log in again.");
-                setTimeout(() => {
-                    navigate("/login");
-                } , 3000);
+                handleSessionExpiration(navigate);
             } else {
-                console.error("Error during fetch", error);
-                showToast("err", "Error adding rating.");
+                console.error("Error during adding rating:", error);
+                showToast("err", "An error occurred while adding rating.");
             }
         } finally {
             setOperating(false); 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../services/axiosConfig";
 import showToast from "../components/showToast";
+import handleSessionExpiration from "../utils/sessionUtils";
 
 const ImportSong = () => {
   const navigate = useNavigate();
@@ -30,19 +31,14 @@ const ImportSong = () => {
         });
 
         if (response.status === 200) {
-          showToast('ok', 'Songs uploaded successfully');
+          showToast('ok', 'Songs uploaded successfully!');
         } 
       } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          showToast('warn', 'Your session has expired. Please log in again.');
-          setTimeout(() => {
-            navigate('/login');
-          }, 3000);
+          handleSessionExpiration(navigate);
         } else {
-          console.error('Error uploading CSV file:', error);
-          showToast('err', 'Error importing from CSV file');
+          console.error('Error during importing from CSV file:', error);
+          showToast('err', 'An error occurred while importing from CSV file.');
         }
       } finally {
         // Reset the CSV file state and stop importing
@@ -51,9 +47,7 @@ const ImportSong = () => {
       }
     } 
     else {
-      console.error("No CSV file selected");
-      showToast("warn", "No CSV file selected");
-
+      showToast("warn", "No CSV file selected.");
       setImporting(false);
     }
   };
@@ -66,19 +60,14 @@ const ImportSong = () => {
       const response = await axiosInstance.post('/transferDataFromExternalDB', {});
 
       if (response.status === 200) {
-        showToast('success', 'Songs imported from DB successfully');
+        showToast('ok', 'Songs imported from DB successfully!');
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        showToast('warn', 'Your session has expired. Please log in again.');
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error('Error making backend request:', error);
-        showToast('err', 'Error importing from external DB');
+        console.error('Error during importing from external DB:', error);
+        showToast('err', 'An error occurred while importing from external DB.');
       }
     } finally {
       setImporting(false);

@@ -5,6 +5,7 @@ import convertToMinutes from "../utils/convertToMinutes";
 import calculateAverageRating from "../utils/calculateAverageRating";
 import showToast from "../components/showToast";
 import axiosInstance from "../services/axiosConfig";
+import handleSessionExpiration from "../utils/sessionUtils";
 
 const UserSongs = () => {
   const navigate = useNavigate();
@@ -33,15 +34,10 @@ const UserSongs = () => {
       if (error.response.status === 404) {
         setNoResults(true);
       } else if (error.response.status === 401 || error.response.status === 403) {
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          navigate("/login")
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during fetching songs", error);
-        showToast("err", "Error fetching songs.");
+        console.error("Error during fetching song data:", error);
+        showToast("err", "An error occurred while fetching song data.");
       }
     } finally {
       setLoading(false);
@@ -59,15 +55,10 @@ const UserSongs = () => {
       if (error.response.status === 404) {
         showToast("warn", "You have not rated any songs yet.");
       } else if (error.response.status === 401 || error.response.status === 403) {
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          navigate("/login")
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during fetch", error);
-        showToast("err", "Error fetching song ratings.");
+        console.error("Error during fetching rating data:", error);
+        showToast("err", "An error occurred while fetching rating data.");
       }
     }
   };
@@ -87,19 +78,14 @@ const UserSongs = () => {
       const response = await axiosInstance.post(`/rating/song/create`, { songId, rating });
 
       if (response.status === 200) {
-        showToast("ok", "Song rated successfully.");
+        showToast("ok", "Song rated successfully!");
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          navigate("/login")
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during rating song.", error);
-        showToast("err", "Error rating song.");
+        console.error("Error during rating song:", error);
+        showToast("err", "An error occurred while rating song.");
       }
     } finally {
       setOperating(false);
@@ -110,24 +96,19 @@ const UserSongs = () => {
   const removeSong = async (songId) => {
     try {
       setOperating(true);
-      showToast("info", "Removing song...");
+      showToast("info", "Deleting song...");
 
       const response = await axiosInstance.post(`/song/deleteSong/User`, { songId });
 
       if (response.status === 200) {
-        showToast("ok", "Song removed successfully.");
+        showToast("ok", "Song deleted successfully!");
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          navigate("/login")
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during removing song:", error);
-        showToast("err", "Error removing song.");
+        console.error("Error during deleting song:", error);
+        showToast("err", "An error occurred while deleting song.");
       }
     } finally {
       setOperating(false);

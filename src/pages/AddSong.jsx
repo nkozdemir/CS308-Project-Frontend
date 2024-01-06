@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import showToast from '../components/showToast';
 import axiosInstance from '../services/axiosConfig';
+import handleSessionExpiration from '../utils/sessionUtils';
 
 function AddSong() {
   const navigate = useNavigate();
@@ -57,20 +58,13 @@ function AddSong() {
           genres: '',
           releaseDate: '',
         });
-        showToast('success', 'Song added successfully.');
-      } else {
-        showToast('err', 'An error occurred while adding the song.');
+        showToast('ok', 'Song added successfully!');
       }
     } catch (error) {
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        showToast('warn', 'Your session has expired. Please log in again.');
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+      if (error.response.status === 401 || error.response.status === 403) {
+        handleSessionExpiration(navigate);
       } else {
-        console.error('Error adding song:', error);
+        console.error('Error during adding song:', error);
         showToast('err', 'An error occurred while adding the song.');
       }
     } finally {

@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../services/axiosConfig';
 import showToast from './showToast';
 import convertToMinutes from '../utils/convertToMinutes';
+import handleSessionExpiration from '../utils/sessionUtils';
 
 const Recommendation = ({ endpoint, buttonText, initialFetch = false, noRecText, noRecLink }) => {
   const navigate = useNavigate();
@@ -33,21 +34,12 @@ const Recommendation = ({ endpoint, buttonText, initialFetch = false, noRecText,
     if (error.response.status === 404) {
       setNoRecommendations(true);
     } else if (error.response.status === 401 || error.response.status === 403) {
-      handleSessionExpiration();
+      handleSessionExpiration(navigate);
     } else {
-      console.error(`Error fetching recommendations from ${endpoint}: `, error);
-      showToast('err', `Error fetching recommendations. Please try again later.`);
+      console.error(`Error during fetching recommendations from ${endpoint}: `, error);
+      showToast('err', `An error occurred while fetching recommendations.`);
       setNoRecommendations(true);
     }
-  };
-
-  const handleSessionExpiration = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    showToast('warn', 'Your session has expired. Please log in again.');
-    setTimeout(() => {
-      navigate('/login');
-    }, 3000);
   };
 
   const addItem = async (itemId) => {
@@ -61,10 +53,10 @@ const Recommendation = ({ endpoint, buttonText, initialFetch = false, noRecText,
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        handleSessionExpiration();
+        handleSessionExpiration(navigate);
       } else {
-        console.error('Error during fetch', error);
-        showToast('err', 'Error adding song. Please try again later.');
+        console.error('Error during adding song:', error);
+        showToast('err', 'An error occurred while adding the song.');
       }
     } finally {
       setAddingItem(false);

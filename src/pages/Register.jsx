@@ -18,7 +18,6 @@ const Register = () => {
             // Validate the form data
             if (!name || !email || !password) {
               // Display a validation error message
-              console.error("Name, email, or password is missing");
               showToast("warn", "Please fill in all fields.");
               setLoading(false);
               return;
@@ -30,7 +29,7 @@ const Register = () => {
             });
             if (response.status === 200) {
               // Registration successful, redirect to the login page
-              showToast("ok", "Registration successful.");
+              showToast("ok", "Registration successful! Redirecting to login page...");
               setTimeout(() => {
                 navigate("/login");
               }, 3000);

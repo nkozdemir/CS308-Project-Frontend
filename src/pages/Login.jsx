@@ -23,7 +23,6 @@ const Login = () => {
       setLoading(true);
 
       if (!email || !password) {
-        console.error('Email or password is missing');
         showToast('warn', 'Please fill in all fields.');
         setLoading(false);
         return;
@@ -47,8 +46,8 @@ const Login = () => {
       if (error.response.status === 400 || error.response.status === 404) {
         showToast('err', 'Wrong email or password.');
       } else {
-        console.error('An error occurred during login:', error);
-        showToast('err', 'An error occurred during login.');
+        console.error('Error during login:', error);
+        showToast('err', 'An error occurred while logging in.');
       }
     } finally {
       setLoading(false);
