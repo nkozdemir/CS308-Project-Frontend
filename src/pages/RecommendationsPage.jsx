@@ -1,24 +1,48 @@
-import SongRecommendations from "../components/recommendations/SongRecommendations";
-import SongRecommendationsFriends from "../components/recommendations/SongRecommendationsFriends";
-import SongRecommendationsLatest from "../components/recommendations/SongRecommendationsLatest";
-import SongRecommendationsPerf from "../components/recommendations/SongRecommendationsPerf";
-import SongRecommendationsFriendsLatest from "../components/recommendations/SongRecommendationsFriendsLatest";
+import Recommendation from "../components/Recommendation";
 
 const RecommendationsPage = () => {
-    return (
-        <div className="my-20 p-4">
-            <h1 className="font-bold flex items-start justify-start text-3xl mb-4">Recommended Songs For You</h1>
-            <SongRecommendations />
-            <div className="divider my-8"></div>
-            <SongRecommendationsLatest />
-            <div className="divider my-8"></div>
-            <SongRecommendationsPerf />
-            <div className="divider my-8"></div>
-            <SongRecommendationsFriends />
-            <div className="divider my-8"></div>
-            <SongRecommendationsFriendsLatest />
-        </div>
-    );
+  return (
+    <div>
+      <h2 className="font-bold text-3xl flex items-center justify-center mb-8">Recommendations For You</h2>
+      <div>
+        <Recommendation
+          endpoint={"/recommendation/song/latest"}
+          buttonText={"Based On Your Latest Songs"}
+          initialFetch={true}
+          noRecText={"You can add songs from"}
+          noRecLink={"/song/search"}
+        />
+        <div className="divider my-8"></div>
+        <Recommendation
+          endpoint={"/recommendation/song/rating"}
+          buttonText={"Based On Your Song Ratings"}
+          noRecText={"You can rate songs from"}
+          noRecLink={"/song/user"}
+        />
+        <div className="divider my-8"></div>
+        <Recommendation
+          endpoint={"/recommendation/performer/rating"}
+          buttonText={"Based On Your Performer Ratings"}
+          noRecText={"You can rate performers from"}
+          noRecLink={"/rating/performer"}
+        />
+        <div className="divider my-8"></div>
+        <Recommendation
+          endpoint={"/recommendation/friend/rating"}
+          buttonText={"Based On Your Friends' Song Ratings"}
+          noRecText={"You can add friends from"}
+          noRecLink={"/friends"}
+        />
+        <div className="divider my-8"></div>
+        <Recommendation
+          endpoint={"/recommendation/friend/latest"}
+          buttonText={"Based On Your Friends' Latest Songs"}
+          noRecText={"You can add friends from"}
+          noRecLink={"/friends"}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default RecommendationsPage;

@@ -1,80 +1,70 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import showToast from '../components/showToast';
 import axiosInstance from '../services/axiosConfig';
+import handleSessionExpiration from '../utils/sessionUtils';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function AddSong() {
   const navigate = useNavigate();
 
-  const [songData, setSongData] = useState({
-    songName: '',
-    performer: '',
-    album: '',
-    length: '',
-    genres: '',
-    releaseDate: '',
+  const validationSchema = Yup.object().shape({
+    songName: Yup.string().required('Track Name is required'),
+    performer: Yup.string().required('Performer Name(s) is required'),
+    album: Yup.string().required('Album Name is required'),
+    length: Yup.number().required('Length (ms) is required').positive('Length should be a positive number'),
+    genres: Yup.string().required('Genre(s) is required'),
+    releaseDate: Yup.string()
+      .required('Release Date is required')
+      .matches(
+        /^(19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+        'Release Date should be in the format YYYY-MM-DD'
+      ),
   });
 
-  const [adding, setAdding] = useState(false);
+  const formik = useFormik({
+    initialValues: {
+      songName: '',
+      performer: '',
+      album: '',
+      length: '',
+      genres: '',
+      releaseDate: '',
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      await handleAddSong(values);
+    },
+  });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSongData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleAddSong = async () => {
+  const handleAddSong = async (values) => {
     try {
-      setAdding(true);
-
-      // Validate input before making a request to the backend
-      if (!Object.values(songData).every(Boolean)) {
-        showToast('warn', 'Please fill in all fields.');
-        setAdding(false);
-        return;
-      }
+      showToast('info', 'Adding song...');
 
       const payload = {
-        title: songData.songName,
-        performers: songData.performer,
-        album: songData.album,
-        length: songData.length,
-        genres: songData.genres,
-        releaseDate: songData.releaseDate,
-      };
+        title: values.songName,
+        performers: values.performer,
+        album: values.album,
+        length: values.length,
+        genres: values.genres,
+        releaseDate: values.releaseDate,
+      }
+      console.log('payload:', payload);
 
       // Use Axios to make the POST request
       const response = await axiosInstance.post('/song/addCustomSong', payload);
 
       if (response.status === 200) {
-        setSongData({
-          songName: '',
-          performer: '',
-          album: '',
-          length: '',
-          genres: '',
-          releaseDate: '',
-        });
-        showToast('success', 'Song added successfully.');
-      } else {
-        showToast('err', 'An error occurred while adding the song.');
+        formik.resetForm();
+        showToast('ok', 'Song added successfully!');
       }
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        showToast('warn', 'Your session has expired. Please log in again.');
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error('Error adding song:', error);
+        console.error('Error during adding song:', error);
         showToast('err', 'An error occurred while adding the song.');
       }
-    } finally {
-      setAdding(false);
     }
   };
 
@@ -89,14 +79,20 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.songName}
-              onChange={handleInputChange}
+              value={formik.values.songName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="songName"
               placeholder="Enter Track Name"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.songName && formik.errors.songName ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.songName && formik.errors.songName ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.songName}</div>
+              </div>
+            ) : null}
           </label>
           <label className="form-control mb-4">
             <div className="label">
@@ -104,14 +100,20 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.performer}
-              onChange={handleInputChange}
+              value={formik.values.performer}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="performer"
               placeholder="Enter Performer Name(s)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.performer && formik.errors.performer ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.performer && formik.errors.performer ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.performer}</div>
+              </div>
+            ) : null}
           </label>
           <label className="form-control mb-4">
             <div className="label">
@@ -119,14 +121,20 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.album}
-              onChange={handleInputChange}
+              value={formik.values.album}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="album"
               placeholder="Enter Album Name"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.album && formik.errors.album ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.album && formik.errors.album ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.album}</div>
+              </div>
+            ) : null}
           </label>
           <label className="form-control mb-4">
             <div className="label">
@@ -134,14 +142,20 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.length}
-              onChange={handleInputChange}
+              value={formik.values.length}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="length"
               placeholder="Enter Length (ms)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.length && formik.errors.length ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.length && formik.errors.length ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.length}</div>
+              </div>
+            ) : null}
           </label>
           <label className="form-control mb-4">
             <div className="label">
@@ -149,14 +163,20 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.genres}
-              onChange={handleInputChange}
+              value={formik.values.genres}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="genres"
               placeholder="Enter Genre(s)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.genres && formik.errors.genres ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.genres && formik.errors.genres ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.genres}</div>
+              </div>
+            ) : null}
           </label>
           <label className="form-control mb-4">
             <div className="label">
@@ -164,23 +184,33 @@ function AddSong() {
             </div>
             <input
               type="text"
-              value={songData.releaseDate}
-              onChange={handleInputChange}
+              value={formik.values.releaseDate}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               name="releaseDate"
               placeholder="Enter Release Date"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.releaseDate && formik.errors.releaseDate ? 'input-error' : 'input-primary'} w-full`}
               required
-              disabled={adding}
+              disabled={formik.isSubmitting}
             />
+            {formik.touched.releaseDate && formik.errors.releaseDate ? (
+              <div className='label'>
+                <div className="label-text-alt text-error">{formik.errors.releaseDate}</div>
+              </div>
+            ) : null}
           </label>
         </div>
         <div className='mt-8'>
-          <button className="btn btn-primary" disabled={adding} onClick={handleAddSong}>
-            {adding ? (
-                <>
-                  <span className="animate-spin mr-2">&#9696;</span>
-                  Adding song 
-                </>
+          <button
+            type='submit' 
+            className="btn btn-primary" 
+            disabled={formik.isSubmitting || !formik.isValid} 
+            onClick={formik.handleSubmit}>
+            {formik.isSubmitting ? (
+              <>
+                <span className="animate-spin mr-2">&#9696;</span>
+                Adding song 
+              </>
             ) : (
               'Add Song'
             )}

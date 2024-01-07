@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../services/axiosConfig';
 import showToast from '../components/showToast';
+import FriendsTable from '../components/FriendsTable';
+import handleSessionExpiration from '../utils/sessionUtils';
 
 const Friends = () => {
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const Friends = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
 
-  const [loadingFriends, setLoadingFriends] = useState(true);
+  const [loadingFriends, setLoadingFriends] = useState(false);
   const [noFriends, setNoFriends] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [noResults, setNoResults] = useState(false);
@@ -31,15 +33,10 @@ const Friends = () => {
         if (error.response.status === 404) {
             setNoFriends(true);
         } else if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error fetching user info: ', error);
-            showToast('error', 'Error fetching user friends info. Please try again later.');
+            console.error('Error during fetching friends information: ', error);
+            showToast('err', 'An error occurred while fetching friends information.');
         }
     } finally {
       setLoadingFriends(false);
@@ -62,15 +59,10 @@ const Friends = () => {
       }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error searching for friends:', error);
-            showToast('error', 'Error searching for friends. Please try again later.');
+            console.error('Error during searching:', error);
+            showToast('err', 'An error occurred while searching.');
         }
     } finally {
       setLoadingSearch(false);
@@ -89,15 +81,10 @@ const Friends = () => {
         }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error during fetch', error);
-            showToast('error', 'Error adding friend. Please try again later.');
+            console.error('Error during adding friend:', error);
+            showToast('err', 'An error occurred while adding friend.');
         }
     } finally {
         setOperating(false);
@@ -117,15 +104,10 @@ const Friends = () => {
         }
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            showToast('warn', 'Your session has expired. Please log in again.');
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            handleSessionExpiration(navigate);
         } else {
-            console.error('Error during fetch', error);
-            showToast('error', 'Error removing friend. Please try again later.');
+            console.error('Error during removing friend:', error);
+            showToast('err', 'An error occurred while removing friend.');
         }
     } finally {
         setOperating(false);
@@ -160,8 +142,8 @@ const Friends = () => {
   }, [searchQuery]);
 
   return (
-    <div className='flex w-full h-screen my-20 p-4'>
-        <div className='w-1/2'>
+    <div className='flex flex-col md:flex-row w-full h-screen my-20 p-4'>
+        <div className='w-full md:w-1/2 mb-8 md:mb-0'>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Friends</h1>
             <div className="flex items-center justify-center mb-16">
                 <input 
@@ -169,8 +151,12 @@ const Friends = () => {
                     placeholder="Find"
                     value={filterQuery}
                     onChange={handleFilter}
+                    disabled={loadingFriends || noFriends}
                 />
             </div>
+            {!noFriends && (
+                <p className='flex items-center justify-center mb-8'>You have {friendsInformation.length} friends.</p>
+            )}
             {loadingFriends ? (
                 <div className="flex items-center justify-center">
                     <span className="loading loading-bars loading-lg"></span>
@@ -178,49 +164,16 @@ const Friends = () => {
             ) : noFriends ? (
                 <p className='flex items-center justify-center'>No friends found.</p>
             ) : (
-                <>
-                    <p className='flex items-center justify-center mb-4'>You have {friendsInformation.length} friends.</p>
-                    <div className="overflow-x-auto shadow-lg">
-                        <table className='table'>
-                            <thead>
-                                <th>Avatar</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Action</th>
-                            </thead>
-                            <tbody>
-                                {filteredFriends.map((result) => (
-                                    <tr key={result.FriendInfo.UserID} className='hover'>
-                                        <td>
-                                            <div className="avatar placeholder mr-4">
-                                                <div className="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center">
-                                                    <span className="text-2xl">{result.FriendInfo.Name[0]}</span>
-                                                </div>
-                                            </div> 
-                                        </td>
-                                        <td>{`@${result.FriendInfo.Email.split('@')[0]}`}</td>
-                                        <td>{result.FriendInfo.Name}</td>
-                                        <td>
-                                            <button 
-                                                className="btn btn-error btn-circle btn-sm"
-                                                disabled={operating}
-                                                onClick={() => removeFriend(result.FriendInfo.UserID)} 
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                                                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </>
+                <FriendsTable
+                    data={filteredFriends.map((friend) => friend.FriendInfo)}
+                    onAction={removeFriend}
+                    isDeleting={true}
+                    loading={operating}
+                />
             )}
         </div>
         <div className='divider divider-horizontal'></div>
-        <div className='w-1/2'>
+        <div className='w-full md:w-1/2'>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Add Friends</h1>
             <div className="flex items-center justify-center mb-16">
                 <input 
@@ -238,42 +191,12 @@ const Friends = () => {
                 ) : noResults ? (
                     <p className='flex items-center justify-center'>No results found.</p>
                 ) : (
-                    <div className="overflow-x-auto shadow-lg">
-                        <table className='table'>
-                            <thead>
-                                <th>Avatar</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Action</th>
-                            </thead>
-                            <tbody>
-                                {searchResults.map((result) => (
-                                    <tr key={result.UserID} className='hover'>
-                                        <td>
-                                            <div className="avatar placeholder mr-4">
-                                                <div className="bg-neutral text-neutral-content rounded-full w-16 h-16 flex items-center justify-center">
-                                                    <span className="text-2xl">{result.Name[0]}</span>
-                                                </div>
-                                            </div> 
-                                        </td>
-                                        <td>{`@${result.Email.split('@')[0]}`}</td>
-                                        <td>{result.Name}</td>
-                                        <td>
-                                            <button 
-                                                className="btn btn-success btn-circle btn-sm" 
-                                                disabled={operating}
-                                                onClick={() => addFriend(result.Email)}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                                                    <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <FriendsTable
+                        data={searchResults}
+                        onAction={addFriend}
+                        isDeleting={false}
+                        loading={operating}
+                    />
                 )}
             </div>
         </div>

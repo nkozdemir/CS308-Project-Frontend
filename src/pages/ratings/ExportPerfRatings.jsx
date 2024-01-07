@@ -1,23 +1,25 @@
-import { useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import showToast from '../../components/showToast';
 import axiosInstance from '../../services/axiosConfig';
+import handleSessionExpiration from '../../utils/sessionUtils';
 
 const ExportPerfRatings = () => {
     const navigate = useNavigate();
 
+    const [performerData, setPerformerData] = useState([]);
     const [performerName, setPerformerName] = useState('');
     const [downloadLink, setDownloadLink] = useState(null);
+
     const [loading, setLoading] = useState(false);
+    const [loadingPerformers, setLoadingPerformers] = useState(false);
+    const [noPerformers, setNoPerformers] = useState(false);
 
     const handleDownload = async () => {
-        // Check if performer name is empty
-        if (!performerName) {
-            showToast('warn', 'Please enter a performer name.');
-            return;
-        }
         try {
             setLoading(true); // Set loading to true when starting the download
+            showToast('info', 'Downloading file...');
 
             const response = await axiosInstance.post('/rating/song/export/performername', 
                 { performerName },
@@ -41,56 +43,113 @@ const ExportPerfRatings = () => {
             link.click();
 
             // Clean up by revoking the object URL
-            window.URL.revokeObjectURL(url);
+            // window.URL.revokeObjectURL(url);
 
             // Display a success alert
-            showToast('success', 'File downloaded successfully.');
+            showToast('ok', 'File downloaded successfully!');
+            setPerformerName(''); // Reset the performer name
         } catch (error) {
-            if (error.response.status === 404) {
-                showToast('warn', 'No ratings found for this performer.');
-            } else if (error.response.status === 401 || error.response.status === 403) {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                showToast('warn', 'Your session has expired. Please log in again.');
-                setTimeout(() => {
-                    navigate('/login');
-                }, 3000);
+            if (error.response.status === 401 || error.response.status === 403) {
+                handleSessionExpiration(navigate);
             } else {
-                console.error('Error downloading file:', error);
-                showToast('error', 'Error downloading file. Please try again.');
+                console.error('Error during downloading file:', error);
+                showToast('err', 'An error occurred while downloading the file.');
             }
         } finally {
             setLoading(false); // Set loading back to false when the download is complete or encounters an error
         }
     };
 
+    const fetchPerformers = async () => {
+        try {
+            setLoadingPerformers(true);
+            const response = await axiosInstance.get(`/rating/song/get/performers`);
+
+            if (response.status === 200) {
+                setPerformerData(response.data.data);
+            }
+        } catch (error) {
+            if (error.response.status === 404) {
+                setNoPerformers(true);
+            } else if (error.response.status === 401 || error.response.status === 403) {
+                handleSessionExpiration(navigate);
+            } else {
+                console.error("Error during fetching performer data:", error);
+                showToast("err", "An error occurred while fetching performer data.");
+            }
+        } finally {
+            setLoadingPerformers(false);
+        }
+    };
+
+    const downloadFromLink = () => {
+        const link = document.createElement('a');
+        link.href = downloadLink;
+        link.download = 'ratings_export.txt'; // Change the file name here
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up by revoking the object URL
+        window.URL.revokeObjectURL(downloadLink);
+
+        setDownloadLink(null);
+    }
+
+    useEffect(() => {
+        fetchPerformers();
+    }, []);
+
     return (
-        <div className='my-20 p-4'>
-            <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Performer Ratings</h1>
-            <div className='flex items-center justify-center flex-col'> {/* Updated line */}
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Performer Name</span>
+        <div>
+            <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Song Ratings</h1>
+            <div className='join flex items-center justify-center mb-16'> 
+                {loadingPerformers && (
+                    <div className='join-item mr-8 mt-8'>
+                        <span className="loading loading-spinner loading-lg"></span>
                     </div>
-                    <input 
-                        type="text" 
-                        value={performerName} 
-                        onChange={(e) => setPerformerName(e.target.value)} 
-                        required 
-                        placeholder="Enter a performer name"
-                        className='input input-bordered input-primary w-full max-w-xs mb-8'
-                    />
-                </label>
-                <button onClick={handleDownload} disabled={loading} className='btn btn-primary'>
-                    {loading ? (
-                        <>
-                        <span className="animate-spin mr-2">&#9696;</span>
-                        Downloading
-                        </>
-                    ) : 'Download File'}
-                </button>
-                {downloadLink && <a href={downloadLink} target="_blank" rel="noopener noreferrer">Click here if the download doesnt start automatically</a>}
+                )}
+                <div className='join-item'>
+                    <label className="form-control w-full max-w-xs">
+                        <div className="label">
+                            <span className="label-text">Choose Performer</span>
+                        </div>
+                        <select 
+                            className="select select-bordered select-primary"
+                            id="performer"
+                            value={performerName}
+                            onChange={(e) => setPerformerName(e.target.value)}
+                            disabled={loadingPerformers || loading || noPerformers}
+                        >
+                            <option value="" disabled>Pick one</option>
+                            {performerData.map((performer) => (
+                                <option key={performer.PerformerID} value={performer.Name}>
+                                    {performer.Name}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+                <div className='join-item ml-4 mt-8'>
+                    <button onClick={handleDownload} disabled={loading || !performerName} className='btn btn-primary'>
+                        {loading ? (
+                            <>
+                                <span className="animate-spin mr-2">&#9696;</span>
+                                Downloading
+                            </>
+                        ) : 'Download File'}
+                    </button>
+                </div>
             </div>
+            {noPerformers && (
+                <p className='flex items-center justify-center'>No performer data found. You must rate performers first.</p>
+            )}
+            {downloadLink && (
+                <div className='flex items-center justify-center'>
+                    <button onClick={() => downloadFromLink()}>
+                        Click here if your download doesn't start automatically.
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

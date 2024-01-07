@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabPanel } from "react-tabs";
 import { Line } from 'react-chartjs-2';
 import "react-tabs/style/react-tabs.css";
 import axiosInstance from "../services/axiosConfig";
 import convertToMinutes from "../utils/convertToMinutes";
 import { Chart, registerables } from 'chart.js';
+import showToast from "../components/showToast";
 Chart.register(...registerables);
 
 const AnalysisPage = () => {
@@ -39,6 +40,7 @@ const AnalysisPage = () => {
         setNoResults(true);
       } else {
         console.error("Error during fetch", error);
+        showToast("err", "An error occurred while fetching the songs.");
       }
     } finally {
       setLoading(false);
@@ -66,6 +68,7 @@ const AnalysisPage = () => {
         setNoResults(true);
       } else {
         console.error("Error during fetch", error);
+        showToast("err", "An error occurred while fetching the songs.");
       }
     } finally {
       setLoading(false);
@@ -83,6 +86,7 @@ const AnalysisPage = () => {
       }
     } catch (error) {
       console.error("Error fetching daily average ratings:", error);
+      showToast("err", "An error occurred while fetching the daily average ratings.");
     } finally {
       setLoading(false);
     }
@@ -122,6 +126,7 @@ const AnalysisPage = () => {
       window.open(tweetUrl, "_blank");
     } catch (error) {
       console.error("Error creating song list tweet:", error);
+      showToast("err", "An error occurred while creating the song list tweet.");
     } finally {
       setLoading(false);
     }
@@ -170,7 +175,7 @@ const AnalysisPage = () => {
   return (
     <div>
       <div className="my-20 p-4">
-        <h1 className="font-bold mb-4 flex items-center justify-center text-3xl">Analysis Page</h1>
+        {/* <h1 className="font-bold mb-4 flex items-center justify-center text-3xl">Analysis Page</h1> */}
         <div role="tablist" className="tabs tabs-boxed mb-8">
           <a role="tab" className={`tab${selectedTab === 0 ? ' tab-active' : ''}`} onClick={() => handleTabChange(0)}>
             Your Favourite Songs By Decade
@@ -216,18 +221,24 @@ const AnalysisPage = () => {
                   {topRatedSongsByDecade.map((song) => (
                     <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
                       <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] && (
+                        {song.Image && JSON.parse(song.Image)?.[1] ? (
                           <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                        ) : (
+                          <img 
+                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                            alt={song.Title} 
+                            style={{ width: "300px", height: "300px" }} 
+                          />
                         )}
                       </figure>
                       <div className="card-body">
                         <h2 className="card-title">{song.Title}</h2>
-                        <p>Performers: {song.Performers.map(genre => genre.Name).join(", ")}</p>
+                        <p>Performer(s): {song.Performers.map(genre => genre.Name).join(", ")}</p>
                         <p>Album: {song.Album}</p>
-                        <p>Genres: {song.Genres.map(genre => genre.Name).join(", ")}</p>
+                        <p>Genre(s): {song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</p>
                         <p>Release Date: {song.ReleaseDate}</p>
                         <p>Length: {convertToMinutes(song.Length)}</p>
-                        <p>Rating: {song.SongRatingInfo.map(rating => rating.Rating).join(", ")}</p>
+                        <p>Rating: {song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}</p>
                       </div>
                     </div>
                   ))}
@@ -278,18 +289,24 @@ const AnalysisPage = () => {
                   {topRatedSongsFromLastMonths.map((song) => (
                     <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
                       <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] && (
+                        {song.Image && JSON.parse(song.Image)?.[1] ? (
                           <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                        ) : (
+                          <img 
+                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                            alt={song.Title} 
+                            style={{ width: "300px", height: "300px" }} 
+                          />
                         )}
                       </figure>
                       <div className="card-body">
                         <h2 className="card-title">{song.Title}</h2>
-                        <p>Performers: {song.Performers.map(genre => genre.Name).join(", ")}</p>
+                        <p>Performer(s): {song.Performers.map(genre => genre.Name).join(", ")}</p>
                         <p>Album: {song.Album}</p>
-                        <p>Genres: {song.Genres.map(genre => genre.Name).join(", ")}</p>
+                        <p>Genre(s): {song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</p>
                         <p>Release Date: {song.ReleaseDate}</p>
                         <p>Length: {convertToMinutes(song.Length)}</p>
-                        <p>Rating: {song.SongRatingInfo.map(rating => rating.Rating).join(", ")}</p>
+                        <p>Rating: {song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}</p>
                       </div>
                     </div>
                   ))}

@@ -5,6 +5,7 @@ import convertToMinutes from "../../utils/convertToMinutes";
 import DisplayStarRating from "../../components/DisplayStarRating";
 import axiosInstance from "../../services/axiosConfig";
 import parseDate from "../../utils/parseDate";
+import handleSessionExpiration from "../../utils/sessionUtils";
 
 const SongRatings = () => {
   const navigate = useNavigate();
@@ -16,6 +17,33 @@ const SongRatings = () => {
   const [loading, setLoading] = useState(false); 
   const [deleting, setDeleting] = useState(false); 
   const [noResults, setNoResults] = useState(false);
+
+  // Sorting
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState("Date");
+
+  const handleSort = (column) => {
+    const isAsc = sortColumn === column && sortOrder === "asc";
+    const newSortOrder = isAsc ? "desc" : "asc";
+  
+    setSortOrder(newSortOrder);
+    setSortColumn(column);
+  
+    const sortedData = [...filteredRatingData].sort((a, b) => {
+      const aValue = column === "Rating" ? a[column] : new Date(a[column]);
+      const bValue = column === "Rating" ? b[column] : new Date(b[column]);
+  
+      if (aValue < bValue) {
+        return isAsc ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return isAsc ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    setFilteredRatingData(sortedData);
+  };
 
   const fetchRatingData = async () => {
     try {
@@ -32,15 +60,10 @@ const SongRatings = () => {
       if (error.response.status === 404) {
         setNoResults(true);
       } else if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-            navigate("/login");
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error during fetch", error);
-        showToast("err", "Error fetching ratings.");
+        console.error("Error during fetching rating data:", error);
+        showToast("err", "An error occurred while fetching rating data.");
       }
     } finally {
       setLoading(false); // Set loading to false after the API request is completed
@@ -59,15 +82,10 @@ const SongRatings = () => {
       }
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        showToast("warn", "Your session has expired. Please log in again.");
-        setTimeout(() => {
-            navigate("/login");
-        }, 3000);
+        handleSessionExpiration(navigate);
       } else {
-        console.error("Error deleting rating:", error);
-        showToast("err", "Error deleting rating.");
+        console.error("Error during deleting rating:", error);
+        showToast("err", "An error occurred while deleting rating.");
       }
     } finally {
       setDeleting(false); 
@@ -97,54 +115,87 @@ const SongRatings = () => {
 
   return (
     <div>
-      <div className="my-20 p-4">
-        <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Song Ratings</h1>
-        <div className="join flex items-center justify-center mb-16">
-          <div>
-            <input 
-              className="input input-bordered input-primary join-item" 
-              placeholder="Search"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
+      <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Song Ratings</h1>
+      <div className="join flex items-center justify-center mb-16">
+        <div>
+          <input 
+            className="input input-bordered input-primary join-item" 
+            placeholder="Search"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            disabled={loading || deleting || noResults}
+          />
         </div>
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <span className="loading loading-bars loading-lg"></span>
-          </div>
-        ) : noResults ? (
-          <p className='flex items-center justify-center'>No rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredRatingData.map((rating) => (
-              <div key={rating.SongRatingID} className="card w-96 bg-base-100 shadow-xl">
-                {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] && (
-                  <figure>
-                    <img src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Image} />
-                  </figure>
-                )}
-                <div className="card-body">
-                  <h2 className="card-title">{rating.SongInfo.Title}</h2>
-                  <p>Album: {rating.SongInfo.Album}</p>
-                  <p>Release Date: {rating.SongInfo.ReleaseDate}</p>
-                  <p>Length: {convertToMinutes(rating.SongInfo.Length)}</p>
-                  <p>Rating:</p> 
-                  <DisplayStarRating rating={rating.Rating}/>
-                  <p>Date: {parseDate(rating.Date)}</p>
-                </div>
-                <div className="card-actions flex items-center justify-center mb-8">
-                  <button onClick={() => removeRating(parseInt(rating.SongRatingID))} disabled={deleting} className="btn btn-error">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              ))}
-          </div>
-        )}
       </div>
+      {loading ? (
+        <div className="flex items-center justify-center">
+          <span className="loading loading-bars loading-lg"></span>
+        </div>
+      ) : noResults ? (
+        <p className='flex items-center justify-center'>No song rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+      ) : (
+        <div className="overflow-x-auto shadow-lg">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Album</th>
+                <th>Release Date</th>
+                <th>Length</th>
+                <th onClick={() => handleSort("Rating")}>
+                  Rating
+                  {sortColumn === "Rating" && (
+                    <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                  )}
+                </th>
+                <th onClick={() => handleSort("Date")}>
+                  Date
+                  {sortColumn === "Date" && (
+                    <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                  )}
+                </th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRatingData.map((rating) => (
+                <tr key={rating.SongRatingID}>
+                  <td>
+                    <figure>
+                      {rating.SongInfo.Image && JSON.parse(rating.SongInfo.Image)?.[1] ? (
+                        <img 
+                          src={JSON.parse(rating.SongInfo.Image)[1].url} alt={rating.SongInfo.Title}
+                          style={{ width: "100px", height: "100px" }} 
+                        />
+                      ) : (
+                        <img 
+                          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                          alt={rating.SongInfo.Title} 
+                          style={{ width: "100px", height: "100px" }} 
+                        />
+                      )}
+                    </figure>
+                  </td>
+                  <td className="font-bold">{rating.SongInfo.Title}</td>
+                  <td className="font-bold">{rating.SongInfo.Album}</td>
+                  <td className="font-bold">{rating.SongInfo.ReleaseDate}</td>
+                  <td className="font-bold">{convertToMinutes(rating.SongInfo.Length)}</td>
+                  <td><DisplayStarRating rating={rating.Rating}/></td>
+                  <td className="font-bold">{parseDate(rating.Date)}</td>
+                  <td>
+                    <button onClick={() => removeRating(parseInt(rating.SongRatingID))} disabled={deleting} className="btn btn-error btn-circle">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512">
+                        <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
