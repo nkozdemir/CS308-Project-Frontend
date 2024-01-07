@@ -179,7 +179,7 @@ const AnalysisPage = () => {
             Your Favourite Songs From Recent Month(s)
           </a>
           <a role="tab" className={`tab${selectedTab === 2 ? ' tab-active' : ''}`} onClick={() => handleTabChange(2)}>
-            Your Daily Average Ratings(s)
+            Your Daily Average Ratings
           </a>
         </div>
         <Tabs selectedIndex={selectedTab} onSelect={handleTabChange}>
