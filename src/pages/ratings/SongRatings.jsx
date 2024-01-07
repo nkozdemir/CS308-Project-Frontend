@@ -140,7 +140,9 @@ const SongRatings = () => {
               <tr>
                 <th>Image</th>
                 <th>Title</th>
+                <th>Performer(s)</th>
                 <th>Album</th>
+                <th>Genre(s)</th>
                 <th>Release Date</th>
                 <th>Length</th>
                 <th onClick={() => handleSort("Rating")}>
@@ -178,7 +180,9 @@ const SongRatings = () => {
                     </figure>
                   </td>
                   <td className="font-bold">{rating.SongInfo.Title}</td>
+                  <td className="font-bold">{rating.SongInfo.Performers.map(performer => performer.Name).join(", ")}</td>
                   <td className="font-bold">{rating.SongInfo.Album}</td>
+                  <td className="font-bold">{rating.SongInfo.Genres.map(genre => genre.Name).join(", ")}</td>
                   <td className="font-bold">{rating.SongInfo.ReleaseDate}</td>
                   <td className="font-bold">{convertToMinutes(rating.SongInfo.Length)}</td>
                   <td><DisplayStarRating rating={rating.Rating}/></td>
