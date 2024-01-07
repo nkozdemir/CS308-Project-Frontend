@@ -84,7 +84,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="songName"
               placeholder="Enter Track Name"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.songName && formik.errors.songName ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
@@ -105,7 +105,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="performer"
               placeholder="Enter Performer Name(s)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.performer && formik.errors.performer ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
@@ -126,7 +126,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="album"
               placeholder="Enter Album Name"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.album && formik.errors.album ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
@@ -147,7 +147,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="length"
               placeholder="Enter Length (ms)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.length && formik.errors.length ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
@@ -168,7 +168,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="genres"
               placeholder="Enter Genre(s)"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.genres && formik.errors.genres ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
@@ -189,7 +189,7 @@ function AddSong() {
               onBlur={formik.handleBlur}
               name="releaseDate"
               placeholder="Enter Release Date"
-              className="input input-bordered input-primary w-full"
+              className={`input input-bordered ${formik.touched.releaseDate && formik.errors.releaseDate ? 'input-error' : 'input-primary'} w-full`}
               required
               disabled={formik.isSubmitting}
             />
