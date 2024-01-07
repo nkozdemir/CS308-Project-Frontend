@@ -4,6 +4,8 @@ import { Line } from 'react-chartjs-2';
 import "react-tabs/style/react-tabs.css";
 import axiosInstance from "../services/axiosConfig";
 import convertToMinutes from "../utils/convertToMinutes";
+import DisplayStarRating from "../components/DisplayStarRating";
+import parseDate from "../utils/parseDate";
 import { Chart, registerables } from 'chart.js';
 import showToast from "../components/showToast";
 Chart.register(...registerables);
@@ -18,6 +20,33 @@ const AnalysisPage = () => {
   const [dailyAverageRatings, setDailyAverageRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noResults, setNoResults] = useState(false);
+
+  // Sorting
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState("DateAdded");
+
+  const handleSort = (column) => {
+    const isAsc = sortColumn === column && sortOrder === "asc";
+    const newSortOrder = isAsc ? "desc" : "asc";
+  
+    setSortOrder(newSortOrder);
+    setSortColumn(column);
+  
+    const sortedData = [...topRatedSongsFromLastMonths].sort((a, b) => {
+      const aValue = column === "Rating" ? a.SongRatingInfo[0]?.Rating || 0 : new Date(a.DateAdded);
+      const bValue = column === "Rating" ? b.SongRatingInfo[0]?.Rating || 0 : new Date(b.DateAdded);
+  
+      if (aValue < bValue) {
+        return isAsc ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return isAsc ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    setTopRatedSongsFromLastMonths(sortedData);
+  };  
 
   const decades = ["2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s"];
 
@@ -217,31 +246,47 @@ const AnalysisPage = () => {
               ) : noResults ? (
                 <p>No results found.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {topRatedSongsByDecade.map((song) => (
-                    <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
-                      <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] ? (
-                          <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
-                        ) : (
-                          <img 
-                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
-                            alt={song.Title} 
-                            style={{ width: "300px", height: "300px" }} 
-                          />
-                        )}
-                      </figure>
-                      <div className="card-body">
-                        <h2 className="card-title">{song.Title}</h2>
-                        <p>Performer(s): {song.Performers.map(genre => genre.Name).join(", ")}</p>
-                        <p>Album: {song.Album}</p>
-                        <p>Genre(s): {song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</p>
-                        <p>Release Date: {song.ReleaseDate}</p>
-                        <p>Length: {convertToMinutes(song.Length)}</p>
-                        <p>Rating: {song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto shadow-lg">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Performer(s)</th>
+                        <th>Album</th>
+                        <th>Genre(s)</th>
+                        <th>Release Date</th>
+                        <th>Length</th>
+                        <th>Rating</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topRatedSongsByDecade.map((song) => (
+                        <tr key={song.SongID}>
+                          <td>
+                            <figure>
+                              {song.Image && JSON.parse(song.Image)?.[1] ? (
+                                <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                              ) : (
+                                <img 
+                                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                                  alt={song.Title} 
+                                  style={{ width: "300px", height: "300px" }} 
+                                />
+                              )}
+                            </figure>
+                          </td>
+                          <td className="font-bold">{song.Title}</td>
+                          <td className="font-bold">{song.Performers.map(genre => genre.Name).join(", ")}</td>
+                          <td className="font-bold">{song.Album}</td>
+                          <td className="font-bold">{song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</td>
+                          <td className="font-bold">{song.ReleaseDate}</td>
+                          <td className="font-bold">{convertToMinutes(song.Length)}</td>
+                          <td><DisplayStarRating rating={song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}/></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </ul>
@@ -285,31 +330,59 @@ const AnalysisPage = () => {
               ) : noResults ? (
                 <p>No results found.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {topRatedSongsFromLastMonths.map((song) => (
-                    <div key={song.SongID} className="card w-96 bg-base-100 shadow-xl">
-                      <figure>
-                        {song.Image && JSON.parse(song.Image)?.[1] ? (
-                          <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
-                        ) : (
-                          <img 
-                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
-                            alt={song.Title} 
-                            style={{ width: "300px", height: "300px" }} 
-                          />
-                        )}
-                      </figure>
-                      <div className="card-body">
-                        <h2 className="card-title">{song.Title}</h2>
-                        <p>Performer(s): {song.Performers.map(genre => genre.Name).join(", ")}</p>
-                        <p>Album: {song.Album}</p>
-                        <p>Genre(s): {song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</p>
-                        <p>Release Date: {song.ReleaseDate}</p>
-                        <p>Length: {convertToMinutes(song.Length)}</p>
-                        <p>Rating: {song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto shadow-lg">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Performer(s)</th>
+                        <th>Album</th>
+                        <th>Genre(s)</th>
+                        <th>Release Date</th>
+                        <th>Length</th>
+                        <th onClick={() => handleSort("DateAdded")}>
+                          Date Added
+                          {sortColumn === "DateAdded" && (
+                            <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                          )}
+                        </th>
+                        <th onClick={() => handleSort("Rating")}>
+                          Rating
+                          {sortColumn === "Rating" && (
+                            <span>{sortOrder === "desc" ? " ▲" : " ▼"}</span>
+                          )}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topRatedSongsFromLastMonths.map((song) => (
+                        <tr key={song.SongID}>
+                          <td>
+                            <figure>
+                              {song.Image && JSON.parse(song.Image)?.[1] ? (
+                                <img src={JSON.parse(song.Image)[1].url} alt={song.Title} />
+                              ) : (
+                                <img 
+                                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                                  alt={song.Title} 
+                                  style={{ width: "300px", height: "300px" }} 
+                                />
+                              )}
+                            </figure>
+                          </td>
+                          <td className="font-bold">{song.Title}</td>
+                          <td className="font-bold">{song.Performers.map(genre => genre.Name).join(", ")}</td>
+                          <td className="font-bold">{song.Album}</td>
+                          <td className="font-bold">{song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</td>
+                          <td className="font-bold">{song.ReleaseDate}</td>
+                          <td className="font-bold">{convertToMinutes(song.Length)}</td>
+                          <td className="font-bold">{parseDate(song.DateAdded)}</td>
+                          <td><DisplayStarRating rating={song.SongRatingInfo.length > 0 ? song.SongRatingInfo.map(rating => rating.Rating).join(", ") : "N/A"}/></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </ul>
@@ -321,6 +394,7 @@ const AnalysisPage = () => {
             </button>
           </TabPanel>
           <TabPanel>
+            {/* Content for Tab 3 */}
             <h3 className="font-bold text-3xl mt-8 mb-4">Your daily average song ratings from last month(s)</h3>
             <label className="form-control w-full max-w-xs">
               <div className="label">
