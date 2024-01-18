@@ -15,7 +15,7 @@ const AnalysisPage = () => {
   const [selectedDecade, setSelectedDecade] = useState(1980);
   const [topRatedSongsByDecade, setTopRatedSongsByDecade] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(1);
-  const [selectedMonth2, setSelectedMonth2] = useState(30);
+  const [selectedMonth2, setSelectedMonth2] = useState(1);
   const [topRatedSongsFromLastMonths, setTopRatedSongsFromLastMonths] = useState([]);
   const [dailyAverageRatings, setDailyAverageRatings] = useState([]);
   const [loading, setLoading] = useState(true);
