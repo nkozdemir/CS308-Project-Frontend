@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../services/axiosConfig";
 import showToast from "../../components/showToast";
 import handleSessionExpiration from "../../utils/sessionUtils";
@@ -71,10 +71,11 @@ const UserPlaylists = () => {
   const deletePlaylist = async (playlistID) => {
     try {
       setOperating(true);
+      showToast("info", "Deleting playlist...");
       const response = await axiosInstance.post("/playlist/deletePlaylist", { playlistID });
       if (response.status === 200) {
         console.log(`Playlist ${playlistID} deleted:`, response.data.data);
-        showToast("success", "Playlist deleted successfully.");
+        showToast("ok", "Playlist deleted successfully.");
       }
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
@@ -92,10 +93,11 @@ const UserPlaylists = () => {
   const deleteSongFromPlaylist = async (playlistID, songID) => {
     try {
       setOperating(true);
+      showToast("info", "Deleting song from playlist...");
       const response = await axiosInstance.post("/playlist/deleteSongFromPlaylist", { playlistID, songID });
       if (response.status === 200) {
         console.log(`Song ${songID} deleted from playlist ${playlistID}:`, response.data.data);
-        showToast("success", "Song deleted from playlist successfully.");
+        showToast("ok", "Song deleted from playlist successfully.");
       }
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
@@ -148,7 +150,7 @@ const UserPlaylists = () => {
   function calculateTotalDuration(songs) {
     // Ensure the input is valid
     if (!Array.isArray(songs) || songs.length === 0) {
-        return "Invalid input. Please provide an array of songs.";
+      return "Invalid input. Please provide an array of songs.";
     }
 
     // Calculate total duration in milliseconds
@@ -160,11 +162,11 @@ const UserPlaylists = () => {
 
     // Display the overall duration based on conditions
     if (hours === 0) {
-        return `${minutes} minutes`;
+      return `${minutes} minutes`;
     } else if (minutes === 0) {
-        return `${hours} hours`;
+      return `${hours} hours`;
     } else {
-        return `${hours} hours and ${minutes} minutes`;
+      return `${hours} hours and ${minutes} minutes`;
     }
   }
 
@@ -232,7 +234,7 @@ const UserPlaylists = () => {
             </div>
           </>
         ) : (
-          <p className="flex items-center justify-center">No playlists found.</p>
+          <p className="flex items-center justify-center">No playlists found. You can create playlists from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
         )}
       </div>
 
@@ -262,10 +264,10 @@ const UserPlaylists = () => {
                 <h2 className="font-bold text-2xl mb-2">{selectedPlaylist.Name}</h2>
                 <p>{parseDate(selectedPlaylist.DateAdded)}</p>
                 {selectedPlaylistData.length !== 0 && (
-                    <>
-                        <p>{selectedPlaylistData.length} song(s)</p>
-                        <p>{calculateTotalDuration(selectedPlaylistData)}</p>
-                    </>
+                  <>
+                    <p>{selectedPlaylistData.length} song(s)</p>
+                    <p>{calculateTotalDuration(selectedPlaylistData)}</p>
+                  </>
                 )}
               </div>
             </div>
@@ -282,11 +284,11 @@ const UserPlaylists = () => {
             </div>
 
             {noResults ? (
-              <p className="flex items-center justify-center">No songs found in this playlist.</p>
+              <p className="flex items-center justify-center">No songs found. You add songs to this playlist from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
             ) : (
-              <div className="overflow-x-auto shadow-lg">
+              <div className="relative overflow-x-auto shadow-lg max-h-[400px]">
                 <table className="table">
-                  <thead>
+                  <thead className="sticky top-0 z-50 bg-base-200">
                     <tr>
                       <th>Image</th>
                       <th>Title</th>

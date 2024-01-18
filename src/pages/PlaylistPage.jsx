@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import Tab1Component from './UserSongs'; 
-import Tab2Component from './playlist/UserPlaylists'; 
+import Tab1Component from './playlist/CreatePlaylist'; 
+import Tab2Component from './playlist/AddSongToPlaylist'; 
 
-const LibraryPage = () => {
+const PlaylistPage = () => {
   // State to manage the active tab
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(1); 
 
   // Function to handle tab click
   const handleTabClick = (tabNumber) => {
@@ -19,14 +19,14 @@ const LibraryPage = () => {
           className={`tab ${activeTab === 1 ? 'tab-active' : ''}`}
           onClick={() => handleTabClick(1)}
         >
-            Your Songs
+            Create Playlist
         </a>
         <a
           role="tab"
           className={`tab ${activeTab === 2 ? 'tab-active' : ''}`}
           onClick={() => handleTabClick(2)}
         >
-            Your Playlists
+            Add Song(s) to Playlist
         </a>
       </div>
 
@@ -37,4 +37,4 @@ const LibraryPage = () => {
   );
 };
 
-export default LibraryPage;
+export default PlaylistPage;

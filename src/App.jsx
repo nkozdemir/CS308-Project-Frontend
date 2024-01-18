@@ -17,6 +17,7 @@ import Footer from './components/Footer';
 import Friends from './pages/Friends';
 import RatingPage from './pages/RatingPage';
 import LibraryPage from './pages/LibraryPage';
+import PlaylistPage from './pages/PlaylistPage';
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/" element={<Home />} /> 
           {/* <Route path="/song/user" element={<UserSongs />} /> */}
           <Route path="/library" element={<LibraryPage />} />
+          <Route path="/playlist" element={<PlaylistPage />} />
           <Route path="/song/search" element={<SearchSong />} />
           <Route path="/song/add" element={<AddSong />} />
           <Route path="/rating" element={<RatingPage />} />

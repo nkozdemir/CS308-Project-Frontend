@@ -1,7 +1,241 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../services/axiosConfig';
+import handleSessionExpiration from '../../utils/sessionUtils';
+import showToast from '../../components/showToast';
+import convertToMinutes from '../../utils/convertToMinutes';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
 const CreatePlaylist = () => {
+    const navigate = useNavigate();
+    const [userSongs, setUserSongs] = useState([]);
+    const [selectedSongs, setSelectedSongs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [noResults, setNoResults] = useState(false);
+    const [allSelected, setAllSelected] = useState(false);
+
+    const fetchUserSongs = async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.get(`/song/getAllUserSongs`);
+            //console.log('User Songs:', response.data.data);
+            setUserSongs(response.data.data);
+        } catch (error) {
+            if (error.response.status === 404) {
+                setNoResults(true);
+            } else if (error.response.status === 401 || error.response.status === 403) {
+                handleSessionExpiration(navigate);
+            } else {
+                console.error("Error during fetching song data:", error);
+                showToast("err", "An error occurred while fetching song data.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const createPlaylist = async (values) => {
+        try {
+            await axiosInstance.post(`/playlist/createPlaylist`, {
+                playlistName: values.playlistName,
+                playlistImage: values.playlistImage,
+                songIDs: selectedSongs
+            });
+            showToast("ok", "Playlist created successfully.");
+        } catch (error) {
+            if (error.response.status === 401 || error.response.status === 403) {
+                handleSessionExpiration(navigate);
+            } else {
+                console.error("Error during creating playlist:", error);
+                showToast("err", "An error occurred while creating playlist.");
+            }
+        } 
+    }
+
+    const handleSelectAll = (e) => {
+        setAllSelected(e.target.checked);
+
+        if (e.target.checked) {
+            const allSongIDs = userSongs.map(song => song.SongID);
+            setSelectedSongs(allSongIDs);
+        } else {
+            setSelectedSongs([]);
+        }
+    };
+
+    const handleSelectSong = (e, songID) => {
+        const isChecked = e.target.checked;
+
+        if (isChecked) {
+            setSelectedSongs((prevSelected) => [...prevSelected, songID]);
+        } else {
+            setSelectedSongs((prevSelected) => prevSelected.filter((id) => id !== songID));
+        }
+    };
+
+    // Form validation schema
+    const validationSchema = Yup.object({
+        playlistName: Yup.string().required('Playlist Name is required.'),
+        playlistImage: Yup.string(),
+    });
+
+    // Formik form management
+    const formik = useFormik({
+        initialValues: {
+            playlistName: '',
+            playlistImage: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: async (values) => {
+            await createPlaylist(values);
+        },
+    });
+
+    useEffect(() => {
+        fetchUserSongs();
+    }, []);
+
     return (
         <div>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Create Playlist</h1>
+            <div>
+                <form onSubmit={formik.handleSubmit}>
+                    <div className='flex items-center justify-center mb-8'>
+                        <label className="form-control w-full max-w-xs">
+                            <div className="label">
+                                <span className="label-text">Playlist Name</span>
+                            </div>
+                            <input 
+                                type="text"
+                                name='playlistName' 
+                                placeholder="Playlist Name" 
+                                className={`input input-bordered ${formik.touched.playlistName && formik.errors.playlistName ? 'input-error' : 'input-primary'} w-full`}
+                                value={formik.values.playlistName}
+                                onChange={formik.handleChange}
+                                disabled={formik.isSubmitting}
+                            />
+                            <div className='label'>
+                            {formik.touched.playlistName && formik.errors.playlistName ? (
+                                <div className="label-text-alt text-error">{formik.errors.playlistName}</div>
+                            ) : (
+                                <div className="label-text-alt">Playlist name must be unique.</div>
+                            )}
+                            </div>
+                        </label>
+                        <label className="form-control w-full max-w-xs ml-8">
+                            <div className="label">
+                                <span className="label-text">Playlist Image URL</span>
+                            </div>
+                            <input 
+                                type="text"
+                                name='playlistImage' 
+                                placeholder="Image URL" 
+                                className={`input input-bordered ${formik.touched.playlistImage && formik.errors.playlistImage ? 'input-error' : 'input-primary'} w-full`}
+                                value={formik.values.playlistImage}
+                                onChange={formik.handleChange}
+                                disabled={formik.isSubmitting}
+                            />
+                            <div className='label'>
+                            {formik.touched.playlistImage && formik.errors.playlistImage ? (
+                                <div className="label-text-alt text-error">{formik.errors.playlistImage}</div>
+                            ) : (
+                                <div className="label-text-alt">Image URL must be a valid URL.</div>
+                            )}
+                            </div>
+                        </label>
+                        <button 
+                            type='submit'
+                            className="btn btn-primary ml-8"
+                            disabled={formik.isSubmitting || !formik.isValid} 
+                        >
+                            {formik.isSubmitting ? (
+                                <>
+                                    <span className="animate-spin mr-2">&#9696;</span>
+                                    Creating Playlist 
+                                </>
+                            ) : (
+                                'Create Playlist'
+                            )}
+                        </button>
+                    </div>
+                </form>
+                {loading ? (
+                    <div className="flex items-center justify-center">
+                        <span className="loading loading-bars loading-lg"></span>
+                    </div>
+                ) : noResults ? (
+                    <p className='flex items-center justify-center font-bold text-xl'>User has no songs.</p>
+                ) : (
+                    <>
+                        <h2 className='font-bold text-2xl mb-8'>Choose Songs (Optional)</h2>
+                        <div className='relative overflow-x-auto max-h-[400px] shadow-lg'>
+                            <table className='table'>
+                                <thead className='sticky top-0 z-50 bg-base-200'>
+                                    <tr>
+                                        <th>
+                                            <input 
+                                                type="checkbox" 
+                                                name="selectAll" 
+                                                value="selectAll"
+                                                className='checkbox checkbox-accent' 
+                                                onChange={(e) => handleSelectAll(e)}
+                                                disabled={formik.isSubmitting}
+                                            />
+                                        </th>
+                                        <th>Image</th>
+                                        <th>Title</th>
+                                        <th>Album</th>
+                                        <th>Performer(s)</th>
+                                        <th>Genre(s)</th>
+                                        <th>Duration</th>
+                                        <th>Release Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {userSongs.map((song) => (
+                                        <tr key={song.SongID}>
+                                            <td>
+                                                <input 
+                                                    type="checkbox" 
+                                                    name="selectedSongs"
+                                                    className='checkbox checkbox-accent' 
+                                                    value={song.SongID}
+                                                    onChange={(e) => handleSelectSong(e, song.SongID)}
+                                                    disabled={formik.isSubmitting || allSelected}
+                                                />
+                                            </td>
+                                            <td>
+                                                <figure>
+                                                    {song.Image && JSON.parse(song.Image)?.[1] ? (
+                                                        <img
+                                                            src={JSON.parse(song.Image)[1].url}
+                                                            alt={song.Title}
+                                                            style={{ width: "100px", height: "100px" }}
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                                                            alt={song.Title}
+                                                            style={{ width: "100px", height: "100px" }}
+                                                        />
+                                                    )}
+                                                </figure>
+                                            </td>
+                                            <td className="font-bold">{song.Title}</td>
+                                            <td className="font-bold">{song.Performers.map(genre => genre.Name).join(", ")}</td>
+                                            <td className="font-bold">{song.Album}</td>
+                                            <td className="font-bold">{song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</td>
+                                            <td className="font-bold">{convertToMinutes(song.Length)}</td>
+                                            <td className="font-bold">{song.ReleaseDate}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 };
