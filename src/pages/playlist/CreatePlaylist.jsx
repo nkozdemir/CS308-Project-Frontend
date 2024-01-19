@@ -115,7 +115,7 @@ const CreatePlaylist = () => {
                                 className={`input input-bordered ${formik.touched.playlistName && formik.errors.playlistName ? 'input-error' : 'input-primary'} w-full`}
                                 value={formik.values.playlistName}
                                 onChange={formik.handleChange}
-                                disabled={formik.isSubmitting}
+                                disabled={formik.isSubmitting || loading}
                             />
                             <div className='label'>
                             {formik.touched.playlistName && formik.errors.playlistName ? (
@@ -127,7 +127,7 @@ const CreatePlaylist = () => {
                         </label>
                         <label className="form-control w-full max-w-xs ml-8">
                             <div className="label">
-                                <span className="label-text">Playlist Image URL</span>
+                                <span className="label-text">Playlist Image</span>
                             </div>
                             <input 
                                 type="text"
@@ -136,20 +136,20 @@ const CreatePlaylist = () => {
                                 className={`input input-bordered ${formik.touched.playlistImage && formik.errors.playlistImage ? 'input-error' : 'input-primary'} w-full`}
                                 value={formik.values.playlistImage}
                                 onChange={formik.handleChange}
-                                disabled={formik.isSubmitting}
+                                disabled={formik.isSubmitting || loading}
                             />
                             <div className='label'>
                             {formik.touched.playlistImage && formik.errors.playlistImage ? (
                                 <div className="label-text-alt text-error">{formik.errors.playlistImage}</div>
                             ) : (
-                                <div className="label-text-alt">Image URL must be a valid URL.</div>
+                                <div className="label-text-alt">Provide an ImageObject.</div>
                             )}
                             </div>
                         </label>
                         <button 
                             type='submit'
                             className="btn btn-primary ml-8"
-                            disabled={formik.isSubmitting || !formik.isValid} 
+                            disabled={formik.isSubmitting || !formik.isValid || loading} 
                         >
                             {formik.isSubmitting ? (
                                 <>
