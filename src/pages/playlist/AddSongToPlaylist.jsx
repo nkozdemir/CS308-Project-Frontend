@@ -16,10 +16,10 @@ const AddSongToPlaylist = () => {
     const [noPlaylists, setNoPlaylists] = useState(false);
     const [reverseOrder, setReverseOrder] = useState(false);
 
-    const fetchUserSongs = async () => {
+    const fetchUserSongs = async (playlistID) => {
         try {
             setLoading(true);
-            const response = await axiosInstance.get(`/song/getAllUserSongs`);
+            const response = await axiosInstance.post(`/playlist/getSongsToAdd`, { playlistID });
             const userSongs = response.data.data;
             console.log('User Songs:', userSongs);
             setUserSongs(userSongs);
@@ -44,7 +44,7 @@ const AddSongToPlaylist = () => {
             console.log('User Playlists:', response.data.data);
             setUserPlaylists(response.data.data);
             setNoPlaylists(false);
-            fetchUserSongs();
+            formik.setFieldValue('playlistID', response.data.data[0].PlaylistID);
         } catch (error) {
             if (error.response.status === 404) {
                 setNoPlaylists(true);
@@ -70,6 +70,7 @@ const AddSongToPlaylist = () => {
             }
         } finally {
             formik.resetForm();
+            fetchUserSongs(playlistID);
         }
     }
 
@@ -115,6 +116,12 @@ const AddSongToPlaylist = () => {
         fetchUserPlaylists();
     }, []);
 
+    useEffect(() => {
+        if (formik.values.playlistID !== 0) {
+            fetchUserSongs(formik.values.playlistID);
+        }
+    }, [formik.values.playlistID]);
+
     return (
         <div>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Add Songs To Playlist</h1>
@@ -132,7 +139,6 @@ const AddSongToPlaylist = () => {
                                 onChange={formik.handleChange}
                                 disabled={formik.isSubmitting || userPlaylists.length === 0 || loading}
                             >
-                                <option value={0}>Select Playlist</option>
                                 {userPlaylists.map((playlist) => (
                                     <option key={playlist.PlaylistID} value={playlist.PlaylistID}>
                                         {playlist.Name}
@@ -163,7 +169,7 @@ const AddSongToPlaylist = () => {
                 ) : noPlaylists ? (
                     <p className='flex items-center justify-center font-bold text-xl'>User has no playlists.</p>
                 ) : noResults ? (
-                    <p className='flex items-center justify-center font-bold text-xl'>User has no songs.</p>
+                    <p className='flex items-center justify-center font-bold text-xl'>User has no songs available to add.</p>
                 ) : (
                     <>
                         <h2 className='font-bold text-2xl mb-8'>Choose Songs To Add</h2>
