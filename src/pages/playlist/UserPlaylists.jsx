@@ -20,6 +20,7 @@ const UserPlaylists = () => {
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [filteredSelectedPlaylistData, setFilteredSelectedPlaylistData] = useState([]);
   const [noPlaylists, setNoPlaylists] = useState(false);
+  const [reverseOrder, setReverseOrder] = useState(false);
 
   const fetchPlaylists = async () => {
     try {
@@ -170,6 +171,11 @@ const UserPlaylists = () => {
     }
   }
 
+  const toggleSortDirection = () => {
+    setFilteredSelectedPlaylistData((prevSongs) => [...prevSongs].reverse()); // Reverse the order of the existing songs
+    setReverseOrder((prevOrder) => !prevOrder); // Toggle the reverse order state
+  };
+
   useEffect(() => {
     fetchPlaylists();
   }, []);
@@ -177,7 +183,7 @@ const UserPlaylists = () => {
   return (
     <div className="flex">
       {/* Left side - List of playlists */}
-      <div className="flex flex-col w-1/3 p-4">
+      <div className="w-1/4 p-4 overflow-y-auto">
         <h1 className="font-bold text-3xl mb-8">Your Playlists</h1>
 
         {/* Search Bar for Playlists */}
@@ -241,7 +247,7 @@ const UserPlaylists = () => {
       <div className="divider divider-horizontal h-screen"></div>
 
       {/* Right side - Detailed view of the chosen playlist */}
-      <div className="flex-grow p-4">
+      <div className="w-3/4 p-4 overflow-y-auto">
         {selectedPlaylist ? !loadingPlaylistDetails ? (
           <>
             <div className="flex items-center mb-8">
@@ -290,7 +296,10 @@ const UserPlaylists = () => {
                 <table className="table">
                   <thead className="sticky top-0 z-50 bg-base-200">
                     <tr>
-                      <th>Image</th>
+                      <th onClick={toggleSortDirection} style={{ cursor: 'pointer' }}>
+                        Image
+                        {!reverseOrder ? ' ▲' : ' ▼'}
+                      </th>
                       <th>Title</th>
                       <th>Performer(s)</th>
                       <th>Album</th>
@@ -323,7 +332,7 @@ const UserPlaylists = () => {
                         <td className="font-bold">{song.Title}</td>
                         <td className="font-bold">{song.Performers.map(performer => performer.Name).join(", ")}</td>
                         <td className="font-bold">{song.Album}</td>
-                        <td className="font-bold">{song.Genres.map(genre => genre.Name).join(", ")}</td>
+                        <td className="font-bold">{song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</td>
                         <td className="font-bold">{song.ReleaseDate}</td>
                         <td className="font-bold">{convertToMinutes(song.Length)}</td>
                         <td>

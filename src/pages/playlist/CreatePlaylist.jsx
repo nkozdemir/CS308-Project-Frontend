@@ -10,10 +10,9 @@ import * as Yup from 'yup';
 const CreatePlaylist = () => {
     const navigate = useNavigate();
     const [userSongs, setUserSongs] = useState([]);
-    const [selectedSongs, setSelectedSongs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [noResults, setNoResults] = useState(false);
-    const [allSelected, setAllSelected] = useState(false);
+    const [reverseOrder, setReverseOrder] = useState(false);
 
     const fetchUserSongs = async () => {
         try {
@@ -40,7 +39,7 @@ const CreatePlaylist = () => {
             await axiosInstance.post(`/playlist/createPlaylist`, {
                 playlistName: values.playlistName,
                 playlistImage: values.playlistImage,
-                songIDs: selectedSongs
+                songIDs: values.selectedSongs
             });
             showToast("ok", "Playlist created successfully.");
         } catch (error) {
@@ -50,27 +49,24 @@ const CreatePlaylist = () => {
                 console.error("Error during creating playlist:", error);
                 showToast("err", "An error occurred while creating playlist.");
             }
+        } finally {
+            formik.resetForm();
         } 
     }
 
     const handleSelectAll = (e) => {
-        setAllSelected(e.target.checked);
-
-        if (e.target.checked) {
-            const allSongIDs = userSongs.map(song => song.SongID);
-            setSelectedSongs(allSongIDs);
-        } else {
-            setSelectedSongs([]);
-        }
+        const allSongIDs = userSongs.map(song => song.SongID);
+        formik.setFieldValue('selectedSongs', e.target.checked ? allSongIDs : []);
     };
 
     const handleSelectSong = (e, songID) => {
         const isChecked = e.target.checked;
-
+        const selectedSongs = formik.values.selectedSongs;
+    
         if (isChecked) {
-            setSelectedSongs((prevSelected) => [...prevSelected, songID]);
+            formik.setFieldValue('selectedSongs', [...selectedSongs, songID]);
         } else {
-            setSelectedSongs((prevSelected) => prevSelected.filter((id) => id !== songID));
+            formik.setFieldValue('selectedSongs', selectedSongs.filter((id) => id !== songID));
         }
     };
 
@@ -85,12 +81,18 @@ const CreatePlaylist = () => {
         initialValues: {
             playlistName: '',
             playlistImage: '',
+            selectedSongs: [],
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             await createPlaylist(values);
         },
     });
+
+    const toggleSortDirection = () => {
+        setUserSongs((prevSongs) => [...prevSongs].reverse()); // Reverse the order of the existing songs
+        setReverseOrder((prevOrder) => !prevOrder); // Toggle the reverse order state
+    };
 
     useEffect(() => {
         fetchUserSongs();
@@ -181,9 +183,13 @@ const CreatePlaylist = () => {
                                                 className='checkbox checkbox-accent' 
                                                 onChange={(e) => handleSelectAll(e)}
                                                 disabled={formik.isSubmitting}
+                                                checked={formik.values.selectedSongs.length === userSongs.length}
                                             />
                                         </th>
-                                        <th>Image</th>
+                                        <th onClick={toggleSortDirection} style={{ cursor: 'pointer' }}>
+                                            Image
+                                            {!reverseOrder ? ' ▲' : ' ▼'}
+                                        </th>
                                         <th>Title</th>
                                         <th>Album</th>
                                         <th>Performer(s)</th>
@@ -194,7 +200,7 @@ const CreatePlaylist = () => {
                                 </thead>
                                 <tbody>
                                     {userSongs.map((song) => (
-                                        <tr key={song.SongID}>
+                                        <tr key={song.SongID} className='hover'>
                                             <td>
                                                 <input 
                                                     type="checkbox" 
@@ -202,7 +208,8 @@ const CreatePlaylist = () => {
                                                     className='checkbox checkbox-accent' 
                                                     value={song.SongID}
                                                     onChange={(e) => handleSelectSong(e, song.SongID)}
-                                                    disabled={formik.isSubmitting || allSelected}
+                                                    disabled={formik.isSubmitting}
+                                                    checked={formik.values.selectedSongs.includes(song.SongID)}
                                                 />
                                             </td>
                                             <td>
