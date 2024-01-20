@@ -146,7 +146,7 @@ const CreatePlaylist = () => {
                             {formik.touched.playlistImage && formik.errors.playlistImage ? (
                                 <div className="label-text-alt text-error">{formik.errors.playlistImage}</div>
                             ) : (
-                                <div className="label-text-alt">Provide an ImageObject.</div>
+                                <div className="label-text-alt">Provide an image object.</div>
                             )}
                             </div>
                         </label>

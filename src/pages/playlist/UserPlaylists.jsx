@@ -39,7 +39,7 @@ const UserPlaylists = () => {
         setNoPlaylists(true);
       } else {
         console.error("Error fetching playlists:", error);
-        showToast("error", "An error occurred during fetching playlists");
+        showToast("err", "An error occurred during fetching playlists");
       }
     } finally {
       setLoadingPlaylists(false);
@@ -50,7 +50,7 @@ const UserPlaylists = () => {
     try {
       setLoadingPlaylistDetails(true);
       const response = await axiosInstance.post("/playlist/getAllSongsForPlaylist", { playlistID });
-      console.log(`Playlist ${playlistID} information:`, response.data.data);
+      //console.log(`Playlist ${playlistID} information:`, response.data.data);
       setSelectedPlaylistData(response.data.data);
       setFilteredSelectedPlaylistData(response.data.data);
       setNoResults(false);
@@ -62,7 +62,7 @@ const UserPlaylists = () => {
         setNoResults(true);
       } else {
         console.error("Error fetching playlist information:", error);
-        showToast("error", "An error occurred during fetching playlist information");
+        showToast("err", "An error occurred during fetching playlist information");
       }
     } finally {
       setLoadingPlaylistDetails(false);
@@ -73,21 +73,19 @@ const UserPlaylists = () => {
     try {
       setOperating(true);
       showToast("info", "Deleting playlist...");
-      const response = await axiosInstance.post("/playlist/deletePlaylist", { playlistID });
-      if (response.status === 200) {
-        console.log(`Playlist ${playlistID} deleted:`, response.data.data);
-        showToast("ok", "Playlist deleted successfully.");
-      }
+      await axiosInstance.post("/playlist/deletePlaylist", { playlistID });
+      //console.log(`Playlist ${playlistID} deleted:`, response.data.data);
+      showToast("ok", "Playlist deleted successfully.");
+      await fetchPlaylists();
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         handleSessionExpiration(navigate);
       } else {
         console.error("Error deleting playlist:", error);
-        showToast("error", "An error occurred during deleting playlist");
+        showToast("err", "An error occurred during deleting playlist");
       }
     } finally {
       setOperating(false);
-      fetchPlaylists();
     }
   };
 
@@ -95,21 +93,19 @@ const UserPlaylists = () => {
     try {
       setOperating(true);
       showToast("info", "Deleting song from playlist...");
-      const response = await axiosInstance.post("/playlist/deleteSongFromPlaylist", { playlistID, songID });
-      if (response.status === 200) {
-        console.log(`Song ${songID} deleted from playlist ${playlistID}:`, response.data.data);
-        showToast("ok", "Song deleted from playlist successfully.");
-      }
+      await axiosInstance.post("/playlist/deleteSongFromPlaylist", { playlistID, songID });
+      //console.log(`Song ${songID} deleted from playlist ${playlistID}:`, response.data.data);
+      showToast("ok", "Song deleted from playlist successfully.");
+      await fetchPlaylistInformation(playlistID);
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         handleSessionExpiration(navigate);
       } else {
         console.error("Error deleting song from playlist:", error);
-        showToast("error", "An error occurred during deleting song from playlist");
+        showToast("err", "An error occurred during deleting song from playlist");
       }
     } finally {
       setOperating(false);
-      fetchPlaylistInformation(playlistID);
     }
   };
 
@@ -129,7 +125,6 @@ const UserPlaylists = () => {
       : playlists;
 
     setFilteredPlaylists(filteredSongs);
-    setNoPlaylists(filteredSongs.length === 0);
   };
 
   const handleSearchSongsChange = (event) => {
@@ -145,7 +140,6 @@ const UserPlaylists = () => {
       : selectedPlaylistData;
 
     setFilteredSelectedPlaylistData(filteredSongs);
-    setNoResults(filteredSongs.length === 0);
   };
 
   function calculateTotalDuration(songs) {
@@ -193,7 +187,7 @@ const UserPlaylists = () => {
             placeholder="Search"
             value={searchQuery}
             onChange={handleSearchChange}
-            disabled={loadingPlaylists || operating || playlists.length === 0}
+            disabled={loadingPlaylists || operating || noPlaylists}
           />
         </div>
 
@@ -201,18 +195,29 @@ const UserPlaylists = () => {
           <div className="flex items-center justify-center">
             <span className="loading loading-bars loading-lg"></span>
           </div>
-        ) : !noPlaylists ? (
+        ) : noPlaylists ? (
+          <p className="flex items-center justify-center">No playlists found. You can create playlists from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+        ) : filteredPlaylists.length === 0 ? (
+          <p className="flex items-center justify-center">No results found.</p>
+        ) : (
           <>
             <div className="overflow-x-auto shadow-lg">
               <table className="table">
+                <thead className="bg-base-200">
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {filteredPlaylists.map((playlist) => (
                     <tr key={playlist.PlaylistID} onClick={() => handlePlaylistClick(playlist)} className={`hover ${selectedPlaylist === playlist ? 'active' : ''}`}>
                       <td>
                         <figure>
-                          {playlist.Image && JSON.parse(playlist.Image)?.[1] ? (
+                          {playlist.Image && JSON.parse(playlist.Image)?.[0] ? (
                             <img
-                              src={JSON.parse(playlist.Image)[1].url}
+                              src={JSON.parse(playlist.Image)[0].url}
                               alt={playlist.Name}
                               style={{ width: "50px", height: "50px" }}
                             />
@@ -239,8 +244,6 @@ const UserPlaylists = () => {
               </table>
             </div>
           </>
-        ) : (
-          <p className="flex items-center justify-center">No playlists found. You can create playlists from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
         )}
       </div>
 
@@ -252,9 +255,9 @@ const UserPlaylists = () => {
           <>
             <div className="flex items-center mb-8">
               <figure className="mr-4">
-                {selectedPlaylist.Image && JSON.parse(selectedPlaylist.Image)?.[1] ? (
+                {selectedPlaylist.Image && JSON.parse(selectedPlaylist.Image)?.[0] ? (
                   <img
-                    src={JSON.parse(selectedPlaylist.Image)[1].url}
+                    src={JSON.parse(selectedPlaylist.Image)[0].url}
                     alt={selectedPlaylist.Name}
                     style={{ width: "200px", height: "200px" }}
                   />
@@ -291,6 +294,8 @@ const UserPlaylists = () => {
 
             {noResults ? (
               <p className="flex items-center justify-center">No songs found. You add songs to this playlist from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+            ) : filteredSelectedPlaylistData.length === 0 ? (
+              <p className="flex items-center justify-center">No results found.</p>
             ) : (
               <div className="relative overflow-x-auto shadow-lg max-h-[400px]">
                 <table className="table">

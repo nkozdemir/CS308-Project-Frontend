@@ -3,9 +3,9 @@ const FriendsTable = ({ data, onAction, isDeleting, loading }) => {
   return (
     <div className="overflow-x-auto shadow-lg">
       <table className="table">
-        <thead>
+        <thead className="bg-base-200">
           <tr>
-            <th>Avatar</th>
+            <th>Image</th>
             <th>Username</th>
             <th>Name</th>
             <th>Action</th>

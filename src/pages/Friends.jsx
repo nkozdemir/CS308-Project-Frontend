@@ -24,11 +24,10 @@ const Friends = () => {
     try {
       setLoadingFriends(true);
       const response = await axiosInstance.get('/friend/getAllFriends');
-
-      if (response.status === 200) {
-        setFriendsInformation(response.data.data);
-        setFilteredFriends(response.data.data);
-      }
+      
+      setFriendsInformation(response.data.data);
+      setFilteredFriends(response.data.data);
+      setNoFriends(false);
     } catch (error) {
         if (error.response.status === 404) {
             setNoFriends(true);
@@ -73,12 +72,10 @@ const Friends = () => {
     try {
         setOperating(true);
         showToast('info', 'Adding friend...');
-        const response = await axiosInstance.post('/friend/addFriend', { friendEmail });
+        await axiosInstance.post('/friend/addFriend', { friendEmail });
 
-        if (response.status === 200) {
-            showToast('ok', 'Friend added successfully!');
-            getFriendsInfo();
-        }
+        showToast('ok', 'Friend added successfully!');
+        getFriendsInfo();
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
             handleSessionExpiration(navigate);
@@ -96,12 +93,10 @@ const Friends = () => {
     try {
         setOperating(true);
         showToast('info', 'Removing friend...');
-        const response = await axiosInstance.post('/friend/deleteFriend', { friendUserId });
+        await axiosInstance.post('/friend/deleteFriend', { friendUserId });
 
-        if (response.status === 200) {
-            showToast('ok', 'Friend removed successfully!');
-            getFriendsInfo();
-        }
+        showToast('ok', 'Friend removed successfully!');
+        getFriendsInfo();
     } catch (error) {
         if (error.response.status === 401 || error.response.status === 403) {
             handleSessionExpiration(navigate);
@@ -124,7 +119,6 @@ const Friends = () => {
     });
 
     setFilteredFriends(filtered);
-    setNoFriends(filtered.length === 0);
   }
 
   useEffect(() => {
@@ -151,7 +145,7 @@ const Friends = () => {
                     placeholder="Find"
                     value={filterQuery}
                     onChange={handleFilter}
-                    disabled={loadingFriends || noFriends}
+                    disabled={loadingFriends || friendsInformation.length === 0}
                 />
             </div>
             {!noFriends && (
@@ -163,6 +157,8 @@ const Friends = () => {
                 </div>
             ) : noFriends ? (
                 <p className='flex items-center justify-center'>No friends found.</p>
+            ) : filteredFriends.length === 0 ? (
+                <p className='flex items-center justify-center'>No results found.</p>
             ) : (
                 <FriendsTable
                     data={filteredFriends.map((friend) => friend.FriendInfo)}

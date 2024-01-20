@@ -248,7 +248,7 @@ const AnalysisPage = () => {
               ) : (
                 <div className="overflow-x-auto shadow-lg">
                   <table className="table">
-                    <thead>
+                    <thead className="bg-base-200">
                       <tr>
                         <th>Image</th>
                         <th>Title</th>
@@ -256,7 +256,7 @@ const AnalysisPage = () => {
                         <th>Album</th>
                         <th>Genre(s)</th>
                         <th>Release Date</th>
-                        <th>Length</th>
+                        <th>Duration</th>
                         <th>Rating</th>
                       </tr>
                     </thead>
@@ -332,7 +332,7 @@ const AnalysisPage = () => {
               ) : (
                 <div className="overflow-x-auto shadow-lg">
                   <table className="table">
-                    <thead>
+                    <thead className="bg-base-200">
                       <tr>
                         <th>Image</th>
                         <th>Title</th>
@@ -340,7 +340,7 @@ const AnalysisPage = () => {
                         <th>Album</th>
                         <th>Genre(s)</th>
                         <th>Release Date</th>
-                        <th>Length</th>
+                        <th>Duration</th>
                         <th onClick={() => handleSort("DateAdded")}>
                           Date Added
                           {sortColumn === "DateAdded" && (

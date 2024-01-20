@@ -244,9 +244,9 @@ const PerformerRatings = () => {
             ) : noResults ? (
                 <p className='flex items-center justify-center'>No performer rating data found. You can rate performers from above.</p>
             ) : (
-                <div className="overflow-x-auto shadow-lg">
+                <div className="relative overflow-x-auto shadow-lg max-h-[400px]">
                     <table className="table">
-                        <thead>
+                        <thead className="sticky top-0 z-50 bg-base-200">
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>

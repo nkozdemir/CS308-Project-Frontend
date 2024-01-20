@@ -110,7 +110,7 @@ const Recommendation = ({ endpoint, buttonText, initialFetch = false, noRecText,
                   <th>Performers</th>
                   <th>Album</th>
                   <th>Release Date</th>
-                  <th>Length</th>
+                  <th>Duration</th>
                   <th>Action</th>
                 </tr>
               </thead>

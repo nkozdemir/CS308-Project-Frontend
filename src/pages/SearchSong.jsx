@@ -144,7 +144,7 @@ const SearchSong = () => {
       ) : searchResults.length > 0 ? (
         <div className="overflow-x-auto shadow-lg">
           <table className="table">
-            <thead>
+            <thead className="bg-base-200">
               <tr>
                 <th>Image</th>
                 <th>Title</th>

@@ -134,9 +134,9 @@ const SongRatings = () => {
       ) : noResults ? (
         <p className='flex items-center justify-center'>No song rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : (
-        <div className="overflow-x-auto shadow-lg">
+        <div className="relative overflow-x-auto shadow-lg max-h-[500px]">
           <table className="table">
-            <thead>
+            <thead className="sticky top-0 z-50 bg-base-200">
               <tr>
                 <th>Image</th>
                 <th>Title</th>
@@ -144,7 +144,7 @@ const SongRatings = () => {
                 <th>Album</th>
                 <th>Genre(s)</th>
                 <th>Release Date</th>
-                <th>Length</th>
+                <th>Duration</th>
                 <th onClick={() => handleSort("Rating")}>
                   Rating
                   {sortColumn === "Rating" && (

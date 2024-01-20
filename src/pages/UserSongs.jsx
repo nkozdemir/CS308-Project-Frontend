@@ -175,7 +175,7 @@ const UserSongs = () => {
                 <p>Album: {song.Album}</p>
                 <p>Genre(s): {song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</p>
                 <p>Release Date: {song.ReleaseDate}</p>
-                <p>Length: {convertToMinutes(song.Length)}</p>
+                <p>Duration: {convertToMinutes(song.Length)}</p>
                 <p>Avg. Rating: {calculateAverageRating(songRatings, song.SongID)}</p>
                 <div className="card-actions flex items-center justify-center">
                   <div className="mr-4">
