@@ -6,6 +6,15 @@ import axios from "axios";
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const closeDropdown = () => {
+        setIsDropdownOpen(false);
+    };
 
     const [theme, setTheme] = useState(
         localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
@@ -46,11 +55,20 @@ const Navbar = () => {
     return (
         <div className="navbar bg-base-100 shadow-md fixed z-50 w-full top-0">
             <div className="navbar-start">
-                <div className="dropdown">
-                    <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+                <div className="dropdown relative">
+                    <div 
+                        tabIndex={0} 
+                        role="button" 
+                        className="btn btn-ghost lg:hidden"
+                        onClick={toggleDropdown}
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
                     </div>
-                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <ul 
+                        tabIndex={0} 
+                        className={`menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 ${isDropdownOpen ? 'block' : 'hidden'}`}                        
+                        onClick={closeDropdown}
+                    >
                         <li><Link to="/library" className={isPathActive('/library') ? 'active' : ''}>Library</Link></li>
                         <li><Link to="/playlist" className={isPathActive('/playlist') ? 'active' : ''}>Playlist</Link></li>
                         <li><Link to="/song/search" className={isPathActive('/song/search') ? 'active' : ''}>Search Song</Link></li>
