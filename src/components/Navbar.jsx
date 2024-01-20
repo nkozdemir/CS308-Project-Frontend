@@ -51,27 +51,15 @@ const Navbar = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
                     </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                        {/* <li><Link to="/song/user" className={isPathActive('/song/user') ? 'active' : ''}>Your Songs</Link></li> */}
                         <li><Link to="/library" className={isPathActive('/library') ? 'active' : ''}>Library</Link></li>
                         <li><Link to="/playlist" className={isPathActive('/playlist') ? 'active' : ''}>Playlist</Link></li>
                         <li><Link to="/song/search" className={isPathActive('/song/search') ? 'active' : ''}>Search Song</Link></li>
                         <li><Link to="/song/add" className={isPathActive('/song/add') ? 'active' : ''}>Add Song</Link></li>
                         <li><Link to="/rating" className={isPathActive('/rating') ? 'active' : ''}>Ratings</Link></li>
-                        {/*
-                        <li>
-                            <details>
-                                <summary>Ratings</summary>
-                                <ul className="p-2">
-                                    <li><Link to="/rating/song" className={isPathActive('/rating/song') ? 'active' : ''}>Your Song Ratings</Link></li>
-                                    <li><Link to="/rating/performer" className={isPathActive('/rating/performer') ? 'active' : ''}>Your Performer Ratings</Link></li>
-                                    <li><Link to="/rating/performer/export" className={isPathActive('/rating/performer/export') ? 'active' : ''}>Export Performer Ratings</Link></li>
-                                </ul>
-                            </details>
-                        </li>
-                        */}
                         <li><Link to="/song/import" className={isPathActive('/song/import') ? 'active' : ''}>Import Songs</Link></li>
                         <li><Link to="/friends" className={isPathActive('/friends') ? 'active' : ''}>Friends</Link></li>
                         <li><Link to="/analysis" className={isPathActive('/analysis') ? 'active' : ''}>Analysis</Link></li>
+                        <li onClick={handleLogout}><Link>Log Out</Link></li>
                     </ul>
                 </div>
                 <button className="btn btn-ghost text-xl">
@@ -102,7 +90,7 @@ const Navbar = () => {
                         <svg className="swap-on fill-current h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
                     </label>
                 </button>
-                <div className="ml-4">
+                <div className="ml-4 hidden sm:block">
                     <button 
                         className="btn btn-error"
                         onClick={handleLogout}
