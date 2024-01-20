@@ -172,8 +172,8 @@ const Friends = () => {
                 />
             )}
         </div>
-        <div className='divider divider-horizontal'></div>
-        <div className='w-full md:w-1/2'>
+        <div className='divider sm:divider-horizontal sm:h-screen'></div>
+        <div className='w-full md:w-1/2 mt-8 sm:mt-0'>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Add Friends</h1>
             <div className="flex items-center justify-center mb-16">
                 <input 
