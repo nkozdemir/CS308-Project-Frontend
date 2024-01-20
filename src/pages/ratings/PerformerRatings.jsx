@@ -161,7 +161,6 @@ const PerformerRatings = () => {
           : ratingData;
     
         setFilteredRatingData(filteredSongs);
-        setNoResults(filteredSongs.length === 0);
     };
 
     useEffect(() => {
@@ -243,6 +242,8 @@ const PerformerRatings = () => {
                 <p className='flex items-center justify-center'>No performer data found. You must rate songs first.</p>
             ) : noResults ? (
                 <p className='flex items-center justify-center'>No performer rating data found. You can rate performers from above.</p>
+            ) : filteredRatingData.length === 0 ? (
+                <p className='flex items-center justify-center'>No results found.</p>
             ) : (
                 <div className="relative overflow-x-auto shadow-lg max-h-[400px]">
                     <table className="table">

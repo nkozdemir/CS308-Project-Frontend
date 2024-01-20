@@ -106,7 +106,6 @@ const SongRatings = () => {
       : ratingData;
 
     setFilteredRatingData(filteredSongs);
-    setNoResults(filteredSongs.length === 0);
   };
 
   useEffect(() => {
@@ -133,6 +132,8 @@ const SongRatings = () => {
         </div>
       ) : noResults ? (
         <p className='flex items-center justify-center'>No song rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+      ) : filteredRatingData.length === 0 ? (
+        <p className='flex items-center justify-center'>No results found.</p>
       ) : (
         <div className="relative overflow-x-auto shadow-lg max-h-[500px]">
           <table className="table">

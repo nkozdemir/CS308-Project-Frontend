@@ -4,7 +4,7 @@ const calculateAverageRating = (songRatings, songId) => {
   
     const sum = ratings.reduce((total, rating) => total + rating.Rating, 0);
     const average = sum / ratings.length;
-    return average.toFixed(1);
+    return average.toFixed(1) + ' / 5';
 };  
 
 export default calculateAverageRating;
