@@ -16,6 +16,7 @@ const RecommendationsPage = () => {
         <Recommendation
           endpoint={"/recommendation/song/rating"}
           buttonText={"Based On Your Song Ratings"}
+          initialFetch={true}
           noRecText={"You can rate songs from"}
           noRecLink={"/song/user"}
         />
@@ -23,6 +24,7 @@ const RecommendationsPage = () => {
         <Recommendation
           endpoint={"/recommendation/performer/rating"}
           buttonText={"Based On Your Performer Ratings"}
+          initialFetch={true}
           noRecText={"You can rate performers from"}
           noRecLink={"/rating/performer"}
         />
@@ -30,6 +32,7 @@ const RecommendationsPage = () => {
         <Recommendation
           endpoint={"/recommendation/friend/rating"}
           buttonText={"Based On Your Friends' Song Ratings"}
+          initialFetch={true}
           noRecText={"You can add friends from"}
           noRecLink={"/friends"}
         />
@@ -37,6 +40,7 @@ const RecommendationsPage = () => {
         <Recommendation
           endpoint={"/recommendation/friend/latest"}
           buttonText={"Based On Your Friends' Latest Songs"}
+          initialFetch={true}
           noRecText={"You can add friends from"}
           noRecLink={"/friends"}
         />
