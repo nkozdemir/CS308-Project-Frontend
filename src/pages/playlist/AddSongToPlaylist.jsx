@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import handleSessionExpiration from '../../utils/sessionUtils';
 import showToast from '../../components/showToast';
@@ -21,7 +21,7 @@ const AddSongToPlaylist = () => {
             setLoading(true);
             const response = await axiosInstance.post(`/playlist/getSongsToAdd`, { playlistID });
             const userSongs = response.data.data;
-            console.log('User Songs:', userSongs);
+            //console.log('User Songs:', userSongs);
             setUserSongs(userSongs);
             setNoResults(false);
         } catch (error) {
@@ -41,7 +41,7 @@ const AddSongToPlaylist = () => {
     const fetchUserPlaylists = async () => {
         try {
             const response = await axiosInstance.get(`/playlist/getAllUserPlaylists`);
-            console.log('User Playlists:', response.data.data);
+            //console.log('User Playlists:', response.data.data);
             setUserPlaylists(response.data.data);
             setNoPlaylists(false);
             formik.setFieldValue('playlistID', response.data.data[0].PlaylistID);
@@ -91,7 +91,7 @@ const AddSongToPlaylist = () => {
     };
 
     // Form validation schema
-    const validationSchema = Yup.object({
+    const validationSchema = Yup.object().shape({
         playlistID: Yup.number().min(1, 'Playlist Name is required.'),
     });
 
@@ -101,7 +101,7 @@ const AddSongToPlaylist = () => {
             playlistID: 0,
             selectedSongs: [],
         },
-        validationSchema: validationSchema,
+        validationSchema,
         onSubmit: async (values) => {
             await addSongsToPlaylist(values.playlistID, values.selectedSongs);
         },
@@ -127,16 +127,18 @@ const AddSongToPlaylist = () => {
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Add Songs To Playlist</h1>
             <div>
                 <form onSubmit={formik.handleSubmit}>
-                    <div className='flex items-center justify-center mb-16'>
-                        <label className="form-control w-full max-w-xs">
+                    <div className='flex flex-col items-center justify-center mb-16 sm:flex-row'>
+                        <label className="form-control w-full max-w-xs mb-4 sm:mb-0">
                             <div className="label">
                                 <span className="label-text">Choose Playlist</span>
                             </div>
                             <select 
-                                className="select select-bordered select-primary"
+                                className={`select select-bordered ${formik.touched.playlistID && formik.errors.playlistID ? 'select-error' : 'select-primary'}`}
                                 name='playlistID'
+                                id='playlistID'
                                 value={formik.values.playlistID}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 disabled={formik.isSubmitting || userPlaylists.length === 0 || loading}
                             >
                                 {userPlaylists.map((playlist) => (
@@ -145,10 +147,15 @@ const AddSongToPlaylist = () => {
                                     </option>
                                 ))}
                             </select>
+                            <div className='label'>
+                            {formik.touched.playlistID && formik.errors.playlistID && (
+                                <div className="label-text-alt text-error">{formik.errors.playlistImage}</div>
+                            )}
+                            </div>
                         </label>
                         <button 
                             type='submit'
-                            className="btn btn-primary ml-8 mt-8"
+                            className="btn btn-primary sm:ml-8 sm:mt-4"
                             disabled={formik.isSubmitting || !formik.isValid || loading || formik.values.selectedSongs.length === 0} 
                         >
                             {formik.isSubmitting ? (
@@ -167,9 +174,9 @@ const AddSongToPlaylist = () => {
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
                 ) : noPlaylists ? (
-                    <p className='flex items-center justify-center font-bold text-xl'>User has no playlists.</p>
+                    <p className="flex items-center justify-center font-bold text-xl">No playlists found. You can create playlists from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
                 ) : noResults ? (
-                    <p className='flex items-center justify-center font-bold text-xl'>User has no songs available to add.</p>
+                    <p className='flex items-center justify-center font-bold text-xl'>No songs available to add.</p>
                 ) : (
                     <>
                         <h2 className='font-bold text-2xl mb-8'>Choose Songs To Add</h2>

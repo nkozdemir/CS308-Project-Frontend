@@ -181,9 +181,9 @@ const UserPlaylists = () => {
   }, []);
 
   return (
-    <div className="flex">
+    <div className="flex flex-col sm:flex-row">
       {/* Left side - List of playlists */}
-      <div className="w-1/4 p-4 overflow-y-auto">
+      <div className="w-full sm:w-1/4 p-4 overflow-y-auto mb-4 sm:mb-0">
         <h1 className="font-bold text-3xl mb-8">Your Playlists</h1>
 
         {/* Search Bar for Playlists */}
@@ -244,10 +244,10 @@ const UserPlaylists = () => {
         )}
       </div>
 
-      <div className="divider divider-horizontal h-screen"></div>
+      <div className="divider sm:divider-horizontal sm:h-screen"></div>
 
       {/* Right side - Detailed view of the chosen playlist */}
-      <div className="w-3/4 p-4 overflow-y-auto">
+      <div className="w-full sm:w-3/4 p-4 overflow-y-auto">
         {selectedPlaylist ? !loadingPlaylistDetails ? (
           <>
             <div className="flex items-center mb-8">

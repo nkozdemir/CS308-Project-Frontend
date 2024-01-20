@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import handleSessionExpiration from '../../utils/sessionUtils';
 import showToast from '../../components/showToast';
@@ -71,7 +71,7 @@ const CreatePlaylist = () => {
     };
 
     // Form validation schema
-    const validationSchema = Yup.object({
+    const validationSchema = Yup.object().shape({
         playlistName: Yup.string().required('Playlist Name is required.'),
         playlistImage: Yup.string(),
     });
@@ -83,7 +83,7 @@ const CreatePlaylist = () => {
             playlistImage: '',
             selectedSongs: [],
         },
-        validationSchema: validationSchema,
+        validationSchema,
         onSubmit: async (values) => {
             await createPlaylist(values);
         },
@@ -103,18 +103,20 @@ const CreatePlaylist = () => {
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Create Playlist</h1>
             <div>
                 <form onSubmit={formik.handleSubmit}>
-                    <div className='flex items-center justify-center mb-8'>
-                        <label className="form-control w-full max-w-xs">
+                    <div className='flex flex-col items-center justify-center mb-16 sm:flex-row'>
+                        <label className="form-control w-full max-w-xs mb-4 sm:mb-0">
                             <div className="label">
                                 <span className="label-text">Playlist Name</span>
                             </div>
                             <input 
                                 type="text"
-                                name='playlistName' 
+                                name='playlistName'
+                                id='playlistName' 
                                 placeholder="Playlist Name" 
                                 className={`input input-bordered ${formik.touched.playlistName && formik.errors.playlistName ? 'input-error' : 'input-primary'} w-full`}
                                 value={formik.values.playlistName}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 disabled={formik.isSubmitting || loading}
                             />
                             <div className='label'>
@@ -125,17 +127,19 @@ const CreatePlaylist = () => {
                             )}
                             </div>
                         </label>
-                        <label className="form-control w-full max-w-xs ml-8">
+                        <label className="form-control w-full max-w-xs sm:ml-8">
                             <div className="label">
                                 <span className="label-text">Playlist Image</span>
                             </div>
                             <input 
                                 type="text"
                                 name='playlistImage' 
+                                id='playlistImage'
                                 placeholder="Image URL" 
                                 className={`input input-bordered ${formik.touched.playlistImage && formik.errors.playlistImage ? 'input-error' : 'input-primary'} w-full`}
                                 value={formik.values.playlistImage}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 disabled={formik.isSubmitting || loading}
                             />
                             <div className='label'>
@@ -148,7 +152,7 @@ const CreatePlaylist = () => {
                         </label>
                         <button 
                             type='submit'
-                            className="btn btn-primary ml-8"
+                            className="btn btn-primary mt-8 sm:mt-0 ml-0 sm:ml-8"
                             disabled={formik.isSubmitting || !formik.isValid || loading} 
                         >
                             {formik.isSubmitting ? (
@@ -167,7 +171,7 @@ const CreatePlaylist = () => {
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
                 ) : noResults ? (
-                    <p className='flex items-center justify-center font-bold text-xl'>User has no songs.</p>
+                    <p className='flex items-center justify-center'>No songs found. You add songs from <Link to="/song/search" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
                 ) : (
                     <>
                         <h2 className='font-bold text-2xl mb-8'>Choose Songs (Optional)</h2>
