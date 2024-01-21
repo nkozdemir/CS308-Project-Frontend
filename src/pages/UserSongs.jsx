@@ -9,15 +9,26 @@ import handleSessionExpiration from "../utils/sessionUtils";
 
 const UserSongs = () => {
   const navigate = useNavigate();
-
   const [userSongs, setUserSongs] = useState([]);
   const [songRatings, setSongRatings] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredSongs, setFilteredSongs] = useState([]);
-
   const [noResults, setNoResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const [operating, setOperating] = useState(false);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' for ascending, 'desc' for descending
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      // If already sorting by this column, toggle direction
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // If sorting by a new column, set it as the sort column and default to ascending
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };  
 
   const fetchUserSongs = async () => {
     try {
@@ -161,19 +172,58 @@ const UserSongs = () => {
             <thead className="sticky top-0 z-50 bg-base-200">
               <tr>
                 <th>Image</th>
-                <th>Title</th>
-                <th>Performers</th>
-                <th>Album</th>
-                <th>Genres</th>
-                <th>Release Date</th>
+                <th onClick={() => handleSort('Title')} className="cursor-pointer">
+                  Title {sortColumn === 'Title' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
+                <th onClick={() => handleSort('Performers')} className="cursor-pointer">
+                  Performers {sortColumn === 'Performers' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
+                <th onClick={() => handleSort('Album')} className="cursor-pointer">
+                  Album {sortColumn === 'Album' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
+                <th>Genre(s)</th>
+                <th onClick={() => handleSort('ReleaseDate')} className="cursor-pointer">
+                  Release Date {sortColumn === 'ReleaseDate' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
                 <th>Duration</th>
-                <th>Avg. Rating</th>
+                <th onClick={() => handleSort('AvgRating')} className="cursor-pointer">
+                  Avg. Rating {sortColumn === 'AvgRating' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
                 <th>Rate</th>
                 <th>Delete</th>
               </tr>
             </thead>
             <tbody>
-              {filteredSongs.map((song) => (
+              {filteredSongs
+                .sort((a, b) => {
+                  switch (sortColumn) {
+                    case 'Title':
+                      return sortDirection === 'asc' ? a.Title.localeCompare(b.Title) : b.Title.localeCompare(a.Title);
+                    case 'Album':
+                      return sortDirection === 'asc' ? a.Album.localeCompare(b.Album) : b.Album.localeCompare(a.Album);
+                    case 'Performers':
+                      return sortDirection === 'asc'
+                        ? a.Performers.map((performer) => performer.Name).join(', ').localeCompare(
+                            b.Performers.map((performer) => performer.Name).join(', ')
+                          )
+                        : b.Performers.map((performer) => performer.Name).join(', ').localeCompare(
+                            a.Performers.map((performer) => performer.Name).join(', ')
+                          );
+                    case 'AvgRating':
+                      return (
+                        sortDirection === 'asc'
+                          ? calculateAverageRating(songRatings, a.SongID) - calculateAverageRating(songRatings, b.SongID)
+                          : calculateAverageRating(songRatings, b.SongID) - calculateAverageRating(songRatings, a.SongID)
+                      );
+                    case 'ReleaseDate':
+                      return sortDirection === 'asc'
+                        ? new Date(a.ReleaseDate) - new Date(b.ReleaseDate)
+                        : new Date(b.ReleaseDate) - new Date(a.ReleaseDate);
+                    default:
+                      return 0;
+                  }
+                })
+                .map((song) => (
                 <tr key={song.SongID} className="hover">
                   <td>
                     <figure>
@@ -194,7 +244,7 @@ const UserSongs = () => {
                   <td className="font-bold">{song.Genres.length > 0 ? song.Genres.map(genre => genre.Name).join(", ") : "N/A"}</td>
                   <td className="font-bold">{song.ReleaseDate}</td>
                   <td className="font-bold">{convertToMinutes(song.Length)}</td>
-                  <td className="font-bold">{calculateAverageRating(songRatings, song.SongID)}</td>
+                  <td className="font-bold">{calculateAverageRating(songRatings, song.SongID) === 0 ? 'N/A' : calculateAverageRating(songRatings, song.SongID) + ' / 5'}</td>
                   <td>
                     <StarRating
                       onStarClick={(rating) => rateSong(parseInt(song.SongID), rating)}

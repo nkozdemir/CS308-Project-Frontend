@@ -8,7 +8,7 @@ const RecommendationsPage = () => {
         <Recommendation
           endpoint={"/recommendation/song/latest"}
           buttonText={"Based On Your Latest Songs"}
-          //initialFetch={true}
+          initialFetch={true}
           noRecText={"You can add songs from"}
           noRecLink={"/song/search"}
         />
