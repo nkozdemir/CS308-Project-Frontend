@@ -135,7 +135,7 @@ const SongRatings = () => {
       ) : filteredRatingData.length === 0 ? (
         <p className='flex items-center justify-center'>No results found.</p>
       ) : (
-        <div className="relative overflow-x-auto shadow-lg max-h-[500px]">
+        <div className="relative overflow-x-auto shadow-lg sm:max-h-[500px] max-h-[400px]">
           <table className="table">
             <thead className="sticky top-0 z-50 bg-base-200">
               <tr>

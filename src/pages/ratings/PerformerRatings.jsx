@@ -171,7 +171,53 @@ const PerformerRatings = () => {
     return (
         <div>
             <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Performer Ratings</h1>
-            <div className="flex items-center justify-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center">
+                <label className="form-control w-full sm:w-[250px] max-w-xs">
+                    <div className="label">
+                        <span className="label-text">Choose Performer</span>
+                        {loadingPerformers && (
+                            <span className="animate-spin">&#9696;</span>
+                        )}
+                    </div>
+                    <select 
+                        className="select select-bordered select-primary"
+                        id="performer"
+                        value={selectedPerformer}
+                        onChange={(e) => setSelectedPerformer(e.target.value)}
+                        disabled={loadingPerformers || operating || noPerformers}
+                    >
+                        <option value={0} disabled>Pick one</option>
+                        {performerData.map((performer) => (
+                            <option key={performer.PerformerID} value={performer.PerformerID}>
+                                {performer.Name}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <label className="form-control w-full sm:w-[250px] max-w-xs sm:mx-8">
+                    <div className="label">
+                        <span className="label-text">Select Rating</span>
+                    </div>
+                    <select 
+                        className="select select-bordered select-primary"
+                        id="rating"
+                        value={rating}
+                        onChange={(e) => setRating(e.target.value)}
+                        disabled={loadingPerformers || operating || noPerformers}
+                    >
+                        <option value={0} disabled>Pick one</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </label>
+                <button onClick={addRating} disabled={operating || loadingPerformers || selectedPerformer === 0 || rating === 0} className="btn btn-primary mt-8">
+                    Add Rating
+                </button>
+            </div>
+            <div className="flex sm:items-start sm:justify-start my-8 items-center justify-center">
                 <input 
                     className="input input-bordered input-primary" 
                     placeholder="Search"
@@ -179,60 +225,6 @@ const PerformerRatings = () => {
                     onChange={handleSearchChange}
                     disabled={loading || operating || noPerformers || noResults}
                 />
-            </div>
-            <div className="join flex items-center justify-center my-8">
-                {loadingPerformers && (
-                    <div className='join-item mr-8 mt-8'>
-                        <span className="loading loading-spinner loading-lg"></span>
-                    </div>
-                )}
-                <div className="join-item">
-                    <label className="form-control w-full max-w-xs">
-                        <div className="label">
-                            <span className="label-text">Choose Performer</span>
-                        </div>
-                        <select 
-                            className="select select-bordered select-primary"
-                            id="performer"
-                            value={selectedPerformer}
-                            onChange={(e) => setSelectedPerformer(e.target.value)}
-                            disabled={loadingPerformers || operating || noPerformers}
-                        >
-                            <option value={0} disabled>Pick one</option>
-                            {performerData.map((performer) => (
-                                <option key={performer.PerformerID} value={performer.PerformerID}>
-                                    {performer.Name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                </div>
-                <div className="join-item mx-8">
-                    <label className="form-control w-full max-w-xs">
-                        <div className="label">
-                            <span className="label-text">Select Rating</span>
-                        </div>
-                        <select 
-                            className="select select-bordered select-primary"
-                            id="rating"
-                            value={rating}
-                            onChange={(e) => setRating(e.target.value)}
-                            disabled={loadingPerformers || operating || noPerformers}
-                        >
-                            <option value={0} disabled>Pick one</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </label>
-                </div>
-                <div className="join-item">
-                    <button onClick={addRating} disabled={operating || loadingPerformers || selectedPerformer === 0 || rating === 0} className="btn btn-primary mt-8">
-                        Add Rating
-                    </button>
-                </div>
             </div>
             {loading ? (
                 <div className="flex items-center justify-center">

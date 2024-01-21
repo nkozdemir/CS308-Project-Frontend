@@ -102,43 +102,39 @@ const ExportPerfRatings = () => {
     return (
         <div>
             <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Song Ratings</h1>
-            <div className='join flex items-center justify-center mb-16'> 
-                {loadingPerformers && (
-                    <div className='join-item mr-8 mt-8'>
-                        <span className="loading loading-spinner loading-lg"></span>
+            <div className='flex flex-col items-center justify-center'> 
+                <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                        <span className="label-text">
+                            Choose Performer
+                        </span>
+                        {loadingPerformers && (
+                            <span className="animate-spin">&#9696;</span>
+                        )}
                     </div>
-                )}
-                <div className='join-item'>
-                    <label className="form-control w-full max-w-xs">
-                        <div className="label">
-                            <span className="label-text">Choose Performer</span>
-                        </div>
-                        <select 
-                            className="select select-bordered select-primary"
-                            id="performer"
-                            value={performerName}
-                            onChange={(e) => setPerformerName(e.target.value)}
-                            disabled={loadingPerformers || loading || noPerformers}
-                        >
-                            <option value="" disabled>Pick one</option>
-                            {performerData.map((performer) => (
-                                <option key={performer.PerformerID} value={performer.Name}>
-                                    {performer.Name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                </div>
-                <div className='join-item ml-4 mt-8'>
-                    <button onClick={handleDownload} disabled={loading || !performerName} className='btn btn-primary'>
-                        {loading ? (
-                            <>
-                                <span className="animate-spin mr-2">&#9696;</span>
-                                Downloading
-                            </>
-                        ) : 'Download File'}
-                    </button>
-                </div>
+                    <select 
+                        className="select select-bordered select-primary"
+                        id="performer"
+                        value={performerName}
+                        onChange={(e) => setPerformerName(e.target.value)}
+                        disabled={loadingPerformers || loading || noPerformers}
+                    >
+                        <option value="" disabled>Pick one</option>
+                        {performerData.map((performer) => (
+                            <option key={performer.PerformerID} value={performer.Name}>
+                                {performer.Name}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <button onClick={handleDownload} disabled={loading || !performerName} className='btn btn-primary mt-8'>
+                    {loading ? (
+                        <>
+                            <span className="animate-spin mr-2">&#9696;</span>
+                            Downloading
+                        </>
+                    ) : 'Download File'}
+                </button>
             </div>
             {noPerformers && (
                 <p className='flex items-center justify-center'>No performer data found. You must rate performers first.</p>

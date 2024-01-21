@@ -138,9 +138,9 @@ const UserSongs = () => {
   return (
     <div>
       <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Your Songs</h1>
-      <div className="join flex items-center justify-center mb-16">
+      <div className="flex sm:items-start sm:justify-start items-center justify-center sm:mb-8 mb-12">
         <input 
-          className="input input-bordered input-primary join-item" 
+          className="input input-bordered input-primary" 
           placeholder="Search"
           value={searchQuery}
           onChange={handleSearchChange}
@@ -156,9 +156,9 @@ const UserSongs = () => {
       ) : filteredSongs.length === 0 ? (
         <p className='flex items-center justify-center'>No results found.</p>
       ) : (
-        <div className="overflow-x-auto shadow-lg">
+        <div className="relative overflow-x-auto shadow-lg sm:max-h-[520px] max-h-[450px]">
           <table className="table">
-            <thead className="bg-base-200">
+            <thead className="sticky top-0 z-50 bg-base-200">
               <tr>
                 <th>Image</th>
                 <th>Title</th>

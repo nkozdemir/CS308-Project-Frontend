@@ -181,7 +181,7 @@ const UserPlaylists = () => {
         <h1 className="font-bold text-3xl mb-8">Your Playlists</h1>
 
         {/* Search Bar for Playlists */}
-        <div className="mb-8">
+        <div className="mb-12">
           <input 
             className="input input-bordered input-primary" 
             placeholder="Search"

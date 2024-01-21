@@ -55,14 +55,9 @@ const SearchSong = () => {
       setIsAdding(true); // Set isAdding to true before adding the song
       showToast("info", "Adding song...");
 
-      const response = await axiosInstance.post('/song/addSpotifySong', 
-        {
-          spotifyId: song.SpotifyId,
-        });
+      await axiosInstance.post('/song/addSpotifySong', { spotifyId: song.SpotifyId });
 
-      if (response.status === 200) {
-        showToast("ok", "Song added successfully!");
-      }
+      showToast("ok", "Song added successfully!");
     } catch (error) {
       if (error.response.status === 401 || error.response.status === 403) {
         handleSessionExpiration(navigate);
@@ -79,53 +74,47 @@ const SearchSong = () => {
     <div className="my-20 p-4">
       <div className="mb-16">
         <h1 className="font-bold mb-8 flex items-center justify-center text-3xl">Search Song</h1>
-        <div className="flex items-center justify-center">
-          <div className="flex space-x-4">
-            <label className="form-control w-full max-w-xs">
-              <div className="label">
-                <span className="label-text">Track Name</span>
-              </div>
-              <input 
-                type="text"
-                value={trackName}
-                onChange={(e) => setTrackName(e.target.value)} 
-                placeholder="Enter Track Name" 
-                className="input input-bordered input-primary w-full max-w-xs" 
-                required
-                disabled={isAdding || isLoading}
-              />
-            </label>
-          </div>
-          <div className="mx-8">
-            <label className="form-control w-full max-w-xs">
-              <div className="label">
-                <span className="label-text">Performer Name</span>
-              </div>
-              <input 
-                type="text"
-                value={performerName}
-                onChange={(e) => setPerformerName(e.target.value)}
-                placeholder="Enter Performer Name" 
-                className="input input-bordered input-primary w-full max-w-xs"
-                disabled={isAdding || isLoading} 
-              />
-            </label>
-          </div>
-          <div>
-            <label className="form-control w-full max-w-xs">
-              <div className="label">
-                <span className="label-text">Album Name</span>
-              </div>
-              <input 
-                type="text"
-                value={albumName}
-                onChange={(e) => setAlbumName(e.target.value)}
-                placeholder="Enter Album Name" 
-                className="input input-bordered input-primary w-full max-w-xs"
-                disabled={isAdding || isLoading} 
-              />
-            </label>
-          </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center">
+          <label className="form-control w-full sm:w-[250px] max-w-xs">
+            <div className="label">
+              <span className="label-text">Track Name</span>
+            </div>
+            <input 
+              type="text"
+              value={trackName}
+              onChange={(e) => setTrackName(e.target.value)} 
+              placeholder="Enter Track Name" 
+              className="input input-bordered input-primary w-full max-w-xs" 
+              required
+              disabled={isAdding || isLoading}
+            />
+          </label>
+          <label className="form-control w-full sm:w-[250px] max-w-xs sm:mx-8 my-4 sm:my-0">
+            <div className="label">
+              <span className="label-text">Performer Name</span>
+            </div>
+            <input 
+              type="text"
+              value={performerName}
+              onChange={(e) => setPerformerName(e.target.value)}
+              placeholder="Enter Performer Name" 
+              className="input input-bordered input-primary w-full max-w-xs"
+              disabled={isAdding || isLoading} 
+            />
+          </label>
+          <label className="form-control w-full sm:w-[250px] max-w-xs">
+            <div className="label">
+              <span className="label-text">Album Name</span>
+            </div>
+            <input 
+              type="text"
+              value={albumName}
+              onChange={(e) => setAlbumName(e.target.value)}
+              placeholder="Enter Album Name" 
+              className="input input-bordered input-primary w-full max-w-xs"
+              disabled={isAdding || isLoading} 
+            />
+          </label>
         </div>
         <div className="flex justify-center mt-8">
           <button className="btn btn-primary" onClick={handleSearch} disabled={isAdding || isLoading}>
@@ -142,47 +131,50 @@ const SearchSong = () => {
       ) : noResults ? (
         <p className='flex items-center justify-center'>No results found. You add songs from <Link to="/song/add" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : searchResults.length > 0 ? (
-        <div className="overflow-x-auto shadow-lg">
-          <table className="table">
-            <thead className="bg-base-200">
-              <tr>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Artists</th>
-                <th>Album</th>
-                <th>Release Date</th>
-                <th>Genres</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {searchResults.map((song) => (
-                <tr key={song.SpotifyId} className="hover">
-                  <td>
-                    <figure>
-                      <img 
-                        src={song.Album.images[2].url} alt={song.Title}
-                        style={{ width: "100px", height: "100px" }}
-                      />
-                    </figure>
-                  </td>
-                  <td className="font-bold">{song.Title}</td>
-                  <td className="font-bold">{song.Performer.map(performer => performer.name).join(", ")}</td>
-                  <td className="font-bold">{song.Album.name}</td>
-                  <td className="font-bold">{song.Album.release_date}</td>
-                  <td className="font-bold">{song.Genres.join(", ")}</td>
-                  <td>
-                    <button className="btn btn-success btn-circle" onClick={() => handleAddToUser(song)} disabled={isAdding}>
-                      <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 448 512">
-                        <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
-                      </svg>
-                    </button>
-                  </td>
+        <>
+          <h2 className="font-bold mb-4 flex items-start justify-start text-2xl">Search Results</h2>
+          <div className="relative overflow-x-auto shadow-lg max-h-[400px]">
+            <table className="table">
+              <thead className="sticky top-0 z-50 bg-base-200">
+                <tr>
+                  <th>Image</th>
+                  <th>Title</th>
+                  <th>Artist(s)</th>
+                  <th>Album</th>
+                  <th>Release Date</th>
+                  <th>Genre(s)</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {searchResults.map((song) => (
+                  <tr key={song.SpotifyId} className="hover">
+                    <td>
+                      <figure>
+                        <img 
+                          src={song.Album.images[2].url} alt={song.Title}
+                          style={{ width: "100px", height: "100px" }}
+                        />
+                      </figure>
+                    </td>
+                    <td className="font-bold">{song.Title}</td>
+                    <td className="font-bold">{song.Performer.map(performer => performer.name).join(", ")}</td>
+                    <td className="font-bold">{song.Album.name}</td>
+                    <td className="font-bold">{song.Album.release_date}</td>
+                    <td className="font-bold">{song.Genres.join(", ")}</td>
+                    <td>
+                      <button className="btn btn-success btn-circle" onClick={() => handleAddToUser(song)} disabled={isAdding}>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 448 512">
+                          <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
     </div>
   );

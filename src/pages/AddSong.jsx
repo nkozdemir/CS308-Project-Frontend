@@ -39,8 +39,6 @@ function AddSong() {
 
   const handleAddSong = async (values) => {
     try {
-      showToast('info', 'Adding song...');
-
       const payload = {
         title: values.songName,
         performers: values.performer,
@@ -49,15 +47,12 @@ function AddSong() {
         genres: values.genres,
         releaseDate: values.releaseDate,
       }
-      console.log('payload:', payload);
+      //console.log('payload:', payload);
 
-      // Use Axios to make the POST request
-      const response = await axiosInstance.post('/song/addCustomSong', payload);
+      await axiosInstance.post('/song/addCustomSong', payload);
 
-      if (response.status === 200) {
-        formik.resetForm();
-        showToast('ok', 'Song added successfully!');
-      }
+      showToast('ok', 'Song added successfully!');
+      formik.resetForm();
     } catch (error) {
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         handleSessionExpiration(navigate);
