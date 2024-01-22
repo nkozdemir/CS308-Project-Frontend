@@ -18,7 +18,7 @@ const RecommendationsPage = () => {
           buttonText={"Based On Your Song Ratings"}
           //initialFetch={true}
           noRecText={"You can rate songs from"}
-          noRecLink={"/song/user"}
+          noRecLink={"/library"}
         />
         <div className="divider my-8"></div>
         <Recommendation
@@ -26,7 +26,7 @@ const RecommendationsPage = () => {
           buttonText={"Based On Your Performer Ratings"}
           //initialFetch={true}
           noRecText={"You can rate performers from"}
-          noRecLink={"/rating/performer"}
+          noRecLink={"/rating"}
         />
         <div className="divider my-8"></div>
         <Recommendation
