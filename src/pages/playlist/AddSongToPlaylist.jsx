@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axiosConfig';
 import handleSessionExpiration from '../../utils/sessionUtils';
 import showToast from '../../components/showToast';
@@ -40,6 +40,7 @@ const AddSongToPlaylist = () => {
 
     const fetchUserPlaylists = async () => {
         try {
+            setLoading(true);
             const response = await axiosInstance.get(`/playlist/getAllUserPlaylists`);
             //console.log('User Playlists:', response.data.data);
             setUserPlaylists(response.data.data);
@@ -54,6 +55,8 @@ const AddSongToPlaylist = () => {
                 console.error("Error during fetching playlist data:", error);
                 showToast("err", "An error occurred while fetching playlist data.");
             }
+        } finally { 
+            setLoading(false);
         }
     }
 
@@ -174,9 +177,9 @@ const AddSongToPlaylist = () => {
                         <span className="loading loading-bars loading-lg"></span>
                     </div>
                 ) : noPlaylists ? (
-                    <p className="flex items-center justify-center font-bold text-xl">No playlists found. You can create playlists from <Link to="/playlist" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+                    <p className="flex items-center justify-center">No playlists found.</p>
                 ) : noResults ? (
-                    <p className='flex items-center justify-center font-bold text-xl'>No songs available to add.</p>
+                    <p className='flex items-center justify-center'>No songs available to add.</p>
                 ) : (
                     <>
                         <h2 className='font-bold text-2xl mb-8'>Choose Songs To Add</h2>

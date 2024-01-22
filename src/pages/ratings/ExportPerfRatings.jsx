@@ -102,7 +102,7 @@ const ExportPerfRatings = () => {
     return (
         <div>
             <h1 className="text-3xl font-bold mb-8 flex items-center justify-center">Export Your Song Ratings</h1>
-            <div className='flex flex-col items-center justify-center'> 
+            <div className='flex flex-col items-center justify-center mb-8'> 
                 <label className="form-control w-full max-w-xs">
                     <div className="label">
                         <span className="label-text">

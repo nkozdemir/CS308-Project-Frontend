@@ -145,7 +145,7 @@ const Friends = () => {
                     placeholder="Find"
                     value={filterQuery}
                     onChange={handleFilter}
-                    disabled={loadingFriends || friendsInformation.length === 0}
+                    disabled={loadingFriends || friendsInformation.length === 0 || noFriends}
                 />
             </div>
             {!noFriends && (
