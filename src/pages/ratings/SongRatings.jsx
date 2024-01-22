@@ -131,7 +131,7 @@ const SongRatings = () => {
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : noResults ? (
-        <p className='flex items-center justify-center'>No song rating data found. You can rate songs from <Link to="/song/user" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
+        <p className='flex items-center justify-center'>No song rating data found. You can rate songs from <Link to="/library" className="text-indigo-600 hover:text-indigo-700 ml-1">here</Link>.</p>
       ) : filteredRatingData.length === 0 ? (
         <p className='flex items-center justify-center'>No results found.</p>
       ) : (
